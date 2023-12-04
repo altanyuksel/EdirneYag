@@ -11,4 +11,8 @@
     <string name="ok">Ok</string>
     <string name="exit">Programı Kapat</string>
     <string name="yes">evet</string>
+    <string name="delivery">Yükleme Listesi</string>
+    <string name="start">Başlat</string>
+    <string name="finish">Bitir</string>
+    <string name="undo">Geri Al</string>
 </resources>

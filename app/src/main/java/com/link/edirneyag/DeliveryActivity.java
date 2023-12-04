@@ -14,7 +14,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setContentView(R.layout.activity_delivery);
     }
     @Override
     protected void onResume() {
