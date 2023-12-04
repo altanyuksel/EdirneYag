@@ -1,0 +1,32 @@
+package RestApi;
+
+import Models.Delivery.ResponseDelivery;
+import Models.Delivery.User;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Query;
+
+public interface RestApi {
+    @GET("api/Ping")
+    Call<Boolean> getPing();
+
+    @GET("api/ping/auth")
+    Call<User> getAuth(@Header("Authorization") String basicAuth);
+
+    @GET("api/delivery")
+    Call<ResponseDelivery> getDelivery(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo, @Query("page") int page, @Query("pageSize") int pageSize);
+
+    @PUT("api/delivery/BeginDelivery")
+    Call<String> setDeliveryStart(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo);
+
+    @POST("api/delivery/FinishDelivery")
+    Call<String> setDeliveryFinish(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo, @Body RequestBody requestBody);
+
+    @PUT("api/delivery/UndoDelivery")
+    Call<String> setDeliveryUndo(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo);
+}

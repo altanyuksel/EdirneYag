@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linkconfig
+    main_url="https://mobilpos.hacibekir.com:4440"
+    mailAddress="altan.518@gmail.com"
+    mailPassword="iftj xatj dxmx pnuh"
+    mailHost="smtp.gmail.com"
+    mailPort="587"
+    mailTls="true"
+/>

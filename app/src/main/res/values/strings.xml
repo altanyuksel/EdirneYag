@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">EdirneYag</string>
+    <string name="password">Parola</string>
+    <string name="user_name">Kullanıcı Adı</string>
+    <string name="login">Bağlan</string>
+    <string name="cancel">Vazgeç</string>
+    <string name="error_config">Config dosyası okunamadı</string>
+    <string name="error_service">SERVİS HATASI!</string>
+    <string name="error_credential">Kimlik doğrulanamadı</string>
+    <string name="error">Hata :</string>
+    <string name="ok">Ok</string>
+</resources>
