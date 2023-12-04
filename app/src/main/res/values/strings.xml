@@ -9,4 +9,6 @@
     <string name="error_credential">Kimlik doğrulanamadı</string>
     <string name="error">Hata :</string>
     <string name="ok">Ok</string>
+    <string name="exit">Programı Kapat</string>
+    <string name="yes">evet</string>
 </resources>
