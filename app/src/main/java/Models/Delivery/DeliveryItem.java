@@ -6,36 +6,12 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DeliveryItem implements Parcelable {
-
-    @SerializedName("SiparisSiraNo")
-    private int siparisSiraNo;
-
-    @SerializedName("SiparisMiktar")
-    private float siparisMiktar;
-
-    @SerializedName("SiparisNo")
-    private String siparisNo;
-
     @SerializedName("SiraNo")
     private int siraNo;
-
-    @SerializedName("Miktar")
-    private float miktar;
-
-    @SerializedName("Miktar2")
-    private float miktar2;
-
-    @SerializedName("Miktar3")
-    private float miktar3;
-
-    @SerializedName("SeriNo")
-    private String seriNo;
-
-    @SerializedName("BarkodNo")
-    private List<String> barkodNo;
 
     @SerializedName("MateryalKodu")
     private String materyalKodu;
@@ -43,7 +19,23 @@ public class DeliveryItem implements Parcelable {
     @SerializedName("MateryalAdi")
     private String materyalAdi;
 
-    private int rowColor = Color.RED;
+    @SerializedName("Miktar")
+    private float miktar;
+
+    @SerializedName("Miktar2")
+    private float miktar2;
+
+    @SerializedName("Palet")
+    private List<Palet> palet;
+
+    @SerializedName("SiparisNo")
+    private String siparisNo;
+
+    @SerializedName("SiparisSiraNo")
+    private int siparisSiraNo;
+
+    @SerializedName("SiparisMiktar")
+    private float siparisMiktar;
 
     public int getSiparisSiraNo(){
         return siparisSiraNo;
@@ -68,23 +60,17 @@ public class DeliveryItem implements Parcelable {
     public void setMiktar2(float sayimMiktar){
         this.miktar2 = sayimMiktar;
     }
-    public void setSeriNo(String seriNo){
-        this.seriNo = seriNo;
-    }
+
     public float getMiktar2(){
         return miktar2;
     }
 
-    public float getMiktar3(){
-        return miktar3;
+    public List<Palet> getPalet() {
+        return palet;
     }
 
-    public String getSeriNo(){
-        return seriNo;
-    }
-
-    public List<String> getBarkodNo(){
-        return barkodNo;
+    public void setPalet(List<Palet> palet) {
+        this.palet = palet;
     }
 
     public String getMateryalKodu(){
@@ -94,26 +80,18 @@ public class DeliveryItem implements Parcelable {
     public String getMateryalAdi(){
         return materyalAdi;
     }
-    public int getRowColor(){
-        return rowColor;
-    }
-    public void setRowColor(int color){
-        this.rowColor = color;
-    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(siparisSiraNo);
-        dest.writeFloat(siparisMiktar);
-        dest.writeString(siparisNo);
         dest.writeInt(siraNo);
         dest.writeFloat(miktar);
         dest.writeFloat(miktar2);
-        dest.writeFloat(miktar3);
-        dest.writeString(seriNo);
-        dest.writeStringList(barkodNo);
         dest.writeString(materyalKodu);
         dest.writeString(materyalAdi);
+        dest.writeString(siparisNo);
+        dest.writeInt(siparisSiraNo);
+        dest.writeFloat(siparisMiktar);
+        dest.writeList(palet);
     }
 
     @Override
@@ -134,16 +112,15 @@ public class DeliveryItem implements Parcelable {
     };
 
     protected DeliveryItem(Parcel in) {
-        siparisSiraNo = in.readInt();
-        siparisMiktar = in.readFloat();
-        siparisNo = in.readString();
         siraNo = in.readInt();
         miktar = in.readFloat();
         miktar2 = in.readFloat();
-        miktar3 = in.readFloat();
-        seriNo = in.readString();
-        barkodNo = in.createStringArrayList();
         materyalKodu = in.readString();
         materyalAdi = in.readString();
+        siparisNo = in.readString();
+        siparisSiraNo = in.readInt();
+        siparisMiktar = in.readFloat();
+        palet = new ArrayList<>();
+        in.readList(palet,List.class.getClassLoader());
     }
 }

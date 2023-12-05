@@ -47,14 +47,8 @@ public class Delivery implements Parcelable {
     @SerializedName("Plaka")
     private String _plate;
 
-    @SerializedName("IrsaliyeNo")
-    private String _waybillNo;
-
     @SerializedName("Notlar")
     private String _notes;
-
-    @SerializedName("SiparisOlusturanKullanici")
-    private String _orderCreatorUser;
 
     @SerializedName("SevkiyatKalemi")
     private List<DeliveryItem> _deliveryItem;
@@ -76,10 +70,6 @@ public class Delivery implements Parcelable {
 
     public String get_notes(){
         return _notes;
-    }
-
-    public String get_orderCreatorUser(){
-        return _orderCreatorUser;
     }
 
     public ErrorMessage get_errorData(){
@@ -122,10 +112,6 @@ public class Delivery implements Parcelable {
         return _driverSurname;
     }
 
-    public String get_waybillNo(){
-        return _waybillNo;
-    }
-
     public int get_status(){
         return _status;
     }
@@ -158,9 +144,7 @@ public class Delivery implements Parcelable {
         dest.writeString(_driverPhone);
         dest.writeString(_driverTCKN);
         dest.writeString(_plate);
-        dest.writeString(_waybillNo);
         dest.writeString(_notes);
-        dest.writeString(_orderCreatorUser);
         dest.writeList(_deliveryItem);
     }
 
@@ -190,9 +174,7 @@ public class Delivery implements Parcelable {
         _driverPhone= in.readString();
         _driverTCKN= in.readString();
         _plate= in.readString();
-        _waybillNo= in.readString();
         _notes= in.readString();
-        _orderCreatorUser= in.readString();
         _deliveryItem = new ArrayList<>();
         in.readList(_deliveryItem,List.class.getClassLoader());
     }

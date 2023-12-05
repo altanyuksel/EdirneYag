@@ -42,7 +42,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="10"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="top">
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -105,7 +106,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="15"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_gravity="top">
             <Button
                 android:id="@+id/btnProcess"
                 android:layout_width="wrap_content"
@@ -114,18 +116,62 @@
                 android:text="ekle"></Button>
         </LinearLayout>
     </LinearLayout>
-    <LinearLayout
+    <HorizontalScrollView
+        android:id="@+id/real_horizontal_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:fillViewport="true"
         android:layout_weight="58"
-        android:orientation="horizontal"
-        android:gravity="center">
-    </LinearLayout>
+        android:scrollbars="none">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="top">
+                <TextView
+                    android:id="@+id/txtMalAdiLH"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="50"
+                    android:text="Mal Adı">
+                </TextView>
+                <TextView
+                    android:id="@+id/txtMiktarLH"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="25"
+                    android:text="Miktar">
+                </TextView>
+                <TextView
+                    android:id="@+id/txtYuklemeMiktarLH"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="25"
+                    android:text="Yükleme Miktarı">
+                </TextView>
+            </LinearLayout>
+            <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/scroll"
+                android:layout_width="match_parent"
+                android:layout_height="225dp">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recViewDeliveryItemList"
+                    android:layout_width="match_parent"
+                    android:padding="1sp"
+                    app:reverseLayout="true"
+                    android:layout_height="wrap_content" />
+            </ScrollView>
+        </LinearLayout>
+    </HorizontalScrollView>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="25"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="top">
     </LinearLayout>
 </LinearLayout>
