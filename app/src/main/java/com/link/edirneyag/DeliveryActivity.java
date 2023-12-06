@@ -16,12 +16,14 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
@@ -33,7 +35,9 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,12 +53,11 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.util.ArrayList;
 
+import Models.Delivery.Palet;
 import adapters.AdapterRVDeliveryItem;
 import Models.Delivery.Delivery;
-import Models.Delivery.DeliveryItem;
 import RestApi.RequestHandler;
 import ServiceSetting.ServiceDefinitions;
-import ServiceSetting.SoundManager;
 import Utils.DecimalInputFilter;
 
 public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder.Callback {
@@ -63,7 +66,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private RequestQueue mRequestQueue;
     private Context mContext;
     private ProgressDialog progressDialog;
-//    private Button btnAdd, btnRemove, btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser;
+    //    private Button btnAdd, btnRemove, btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser;
     private Button btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser;
     private EditText editNumber;
 
@@ -74,7 +77,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     private SurfaceView surfaceViewDelivery;
     private SurfaceHolder mSurfaceHolder;
-    private TextView txtBarcodeValue, txtVehicle, txtUsername;
+    private TextView txtBarcodeValue, txtVehicle, txtUsername, txtMalAdi, txtPaletMiktar;
 
     public static String strCountDeliveryNo, barcodeString;
     private BarcodeDetector barcodeDetector;
@@ -91,6 +94,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private static final String KEY_DELIVERYITEMS_ADAPTER = "KEY_DELIVERYITEMS_ADAPTER";
     private static final String KEY_DELIVERYITEMS_SELECTED = "KEY_DELIVERYITEMS_SELECTED";
     private static final String KEY_DELIVERYNO = "KEY_DELIVERYNO";
+    private Switch cameraSwitch;
+    private boolean isCameraRunning = true;
     //endregion
 
     //region $ACTIVITY OVERRIDE METHODS
@@ -101,23 +106,28 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         initDefinitions(savedInstanceState);
         checkService();
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         initializeDetectorsAndSources();
     }
+
     @Override
     protected void onPostResume() {
         super.onPostResume();
     }
+
     @Override
     protected void onPause() {
         super.onPause();
     }
+
     @Override
     protected void onStop() {
         super.onStop();
     }
+
     @Override
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -153,13 +163,14 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         surfaceViewDelivery = findViewById(R.id.surfaceViewDelivery);
         txtBarcodeValue = findViewById(R.id.txtBarcodeValue);
         btnUpdate = findViewById(R.id.btnUpdate);
-//        btnAdd = findViewById(R.id.addBtn);
-//        btnRemove = findViewById(R.id.removeBtn);
-        editNumber = findViewById(R.id.itemQuanEt);
         txtVehicle = findViewById(R.id.txtVehicle);
         txtUsername = findViewById(R.id.txtUsername);
         recViewDeliveryList = findViewById(R.id.recViewDeliveryItemList);
         btnChangeUser = findViewById(R.id.btnChangeUser);
+        cameraSwitch = findViewById(R.id.swCamera);
+        txtMalAdi = findViewById(R.id.txtMalAdi);
+        txtPaletMiktar = findViewById(R.id.txtPaletMiktar);
+        editNumber = findViewById(R.id.editSayim);
 
         mSurfaceHolder = surfaceViewDelivery.getHolder();
 
@@ -208,7 +219,21 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                 }
             }
         });
+
+        cameraSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // Switch açıkken, kamerayı başlat
+                    startCamera();
+                } else {
+                    // Switch kapalıysa, kamerayı durdur
+                    stopCamera();
+                }
+            }
+        });
     }
+
     private void initDefinitions(Bundle savedInstanceState) {
         mContext = getApplicationContext();
         mRequestQueue = Volley.newRequestQueue(mContext);
@@ -229,6 +254,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             fillList(response);
         }
     }
+
     private void checkService() {
         try {
             if (serviceDefinitions == null) {
@@ -244,8 +270,9 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             showErrorDialog(e.getMessage());
         }
     }
+
     private void startDelivery(String deliveryNo) throws Exception {
-        if (deliveryNo != null && deliveryNo != ""){
+        if (deliveryNo != null && deliveryNo != "") {
             requestHandler.setDeliveryStatus(deliveryNo, 1, this, response.get_deliveryItem());
             response.set_status(1);
             selectedItemList = new ArrayList<>();
@@ -254,20 +281,22 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     private void undoDelivery(String deliveryNo) throws Exception {
-        if (deliveryNo != null && deliveryNo != ""){
+        if (deliveryNo != null && deliveryNo != "") {
             requestHandler.setDeliveryStatus(deliveryNo, 0, this, response.get_deliveryItem());
             response.set_status(1);
             selectedItemList = new ArrayList<>();
             showToastMessage(getString(R.string.undo_delivery), Toast.LENGTH_LONG, Gravity.TOP);
         }
     }
+
     private void finishDelivery(String deliveryNo) throws Exception {
-        if (response.get_status() == 1){
+        if (response.get_status() == 1) {
             requestHandler.setDeliveryStatus(deliveryNo, 2, this, response.get_deliveryItem());
-        }else{
+        } else {
             showErrorDialog(getString(R.string.error_finish));
         }
     }
+
     private void initializeDetectorsAndSources() {
         barcodeString = "";
         Log.d(TAG, "initializeDetectorsAndSources: Barcode scan is start.");
@@ -290,23 +319,17 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
                 if (barcodes.size() != 0) {
-                    if (canReadBarcode){
+                    if (canReadBarcode) {
                         canReadBarcode = false;
                         txtBarcodeValue.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 canReadBarcode = true;
-                                if (response != null && response.get_status() == 1){
+                                if (response != null && response.get_status() == 1) {
                                     barcodeString = barcodes.valueAt(0).displayValue;
                                     txtBarcodeValue.setText(barcodeString);
                                     Log.d(TAG, "initializeDetectorsAndSources: barcode was scanned. scanned string : " + barcodeString);
-                                    if (setDeliveryRows(barcodeString, 1, "") == false && barcodeString.length() > 12){
-                                        String sPluNumber = barcodeString.substring(3, 7);
-                                        int plu = Integer.valueOf(sPluNumber);
-                                        String sMiktar = barcodeString.substring(7, 9) + "." + barcodeString.substring(9, 11);
-                                        float miktar = Float.parseFloat(sMiktar);
-                                        setDeliveryRows(String.valueOf(plu), miktar,"");
-                                    }
+                                    setDeliveryRows(barcodeString);
                                     showToastMessage(barcodeString, Toast.LENGTH_LONG, Gravity.TOP);
                                 }
                             }
@@ -316,20 +339,24 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             }
         });
     }
+
     private void initProgressDialog() {
         progressDialog = new ProgressDialog(DeliveryActivity.this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
         progressDialog.setCancelable(false);
         progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
     }
+
     private void initErrorDialog() {
         errDialog = new AlertDialog.Builder(DeliveryActivity.this);
     }
+
     private void showProgressDialog(String title, String message) {
         progressDialog.setTitle(title); // Setting Title
         progressDialog.setMessage(message); // Setting Message
         progressDialog.show(); // Display Progress Dialog
     }
+
     private void showErrorDialog(String message) {
         errDialog.setTitle(getResources().getString(R.string.error));
         errDialog.setMessage(message);
@@ -341,11 +368,22 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         });
         errDialog.show();
     }
+
     private void hideProgressDialog() {
         progressDialog.dismiss();
     }
-    public boolean setDeliveryRows(String readedBarcode, float miktar, String seriNo) {
-//        if (!response.equals(null)){
+
+    public void setDeliveryRows(String readedBarcode) {
+        Palet palet = requestHandler.getPalet(readedBarcode);
+        if (palet != null){
+            txtMalAdi.setText(palet.getMateryalAdi());
+            txtPaletMiktar.setText(String.valueOf(palet.getMiktar()));
+            editNumber.setText("0");
+        }else{
+            showToastMessage(getString(R.string.couldnot_find_pallet), Toast.LENGTH_LONG, Gravity.TOP);
+        }
+
+        //        if (!response.equals(null)){
 //            for (DeliveryItem item: response.get_deliveryItem()) {
 //                for (String barcode: item.getMateryalKodu()) {
 //                    if (barcode.equalsIgnoreCase(readedBarcode)){
@@ -373,22 +411,25 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 //                }
 //            }
 //        }
-        return false;
     }
+
     private void openPopUpWindow(View v) {
         popUpClass = new MyPopUpWindow(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this);
         popUpClass.showPopupWindow();
     }
+
     public void closePopupWindow(String emirNo) {
         popUpClass.dismissPopupWindow();
         strCountDeliveryNo = emirNo;
         fillList(null);
     }
-    private void showToastMessage(String message, int duration, int gravity){
-        Toast toast = Toast.makeText(getApplicationContext(), message,duration);
-        toast.setGravity(gravity, 0,0);
+
+    private void showToastMessage(String message, int duration, int gravity) {
+        Toast toast = Toast.makeText(getApplicationContext(), message, duration);
+        toast.setGravity(gravity, 0, 0);
         toast.show();
     }
+
     private void setDeliveryListView() {
         mAdapterRVDeliveryItem = new AdapterRVDeliveryItem(response.get_deliveryItem(), DeliveryActivity.this);
         recViewDeliveryList.setAdapter(mAdapterRVDeliveryItem);
@@ -396,9 +437,10 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recViewDeliveryList.setLayoutManager(linearLayoutManager);
     }
+
     private void fillList(Delivery res) {
         try {
-            if (res == null){
+            if (res == null) {
                 response = requestHandler.getDelivery(strCountDeliveryNo);
                 selectedItemList = new ArrayList<>();
                 selectedIndex = -1;
@@ -414,14 +456,14 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                     return;
                 }
             }
-            btnDeliveryNo.setText( response.get_deliveryNo());
+            btnDeliveryNo.setText(response.get_deliveryNo());
             String info = "Plaka: " + response.get_plate();
             info += ", Soför Ad - Soyad: " + response.get_driverName() + " " + response.get_driverSurname();
             info += ", Soför TCKN: " + response.get_driverTCKN();
             info += ", Soför Tel: " + response.get_driverPhone();
             txtVehicle.setText(info);
             hideProgressDialog();
-            if (response.get_status() == 0){
+            if (response.get_status() == 0) {
                 btnStart.setBackgroundColor(Color.GREEN);
 //                btnUndo.setBackgroundColor(Color.RED);
 //                btnFinish.setBackgroundColor(Color.RED);
@@ -442,10 +484,11 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             Log.d(TAG, getString(R.string.error) + exception.getMessage());
         }
     }
-    public void clearAll(String waybillNo, String errorMessage){
+
+    public void clearAll(String waybillNo, String errorMessage) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        String message = getString(R.string.finish_delivery) + "(" + getString(R.string.waybillno) +":" + waybillNo + ")";
-        if (!errorMessage.equals("")){
+        String message = getString(R.string.finish_delivery) + "(" + getString(R.string.waybillno) + ":" + waybillNo + ")";
+        if (!errorMessage.equals("")) {
             message = getString(R.string.error) + errorMessage;
         }
         builder.setMessage(message);
@@ -464,7 +507,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-    private void clearPage(){
+
+    private void clearPage() {
         btnDeliveryNo.setText(getString(R.string.delivery_no));
         txtVehicle.setText("");
         strCountDeliveryNo = "";
@@ -485,19 +529,20 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         btnUndo.setEnabled(false);
         btnFinish.setEnabled(false);
     }
-    private String controlConditions(){
+
+    private String controlConditions() {
         String errMessage = "";
         double toplamSayimMiktar = 0;
-        for (int i = 0; i <= response.get_deliveryItem().size()-1; i++){
+        for (int i = 0; i <= response.get_deliveryItem().size() - 1; i++) {
             toplamSayimMiktar += response.get_deliveryItem().get(i).getMiktar2();
         }
 //        if (selectedItemList.size() != response.get_deliveryItem().size()){
 //            errMessage = "Tüm satırlar okutulmalıdır.";
 //        }
-        if (toplamSayimMiktar <= 0){
+        if (toplamSayimMiktar <= 0) {
             errMessage = "En az bir satır okutulmalıdır.";
         }
-        return  errMessage;
+        return errMessage;
     }
     //endregion
 
@@ -515,6 +560,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             e.printStackTrace();
         }
     }
+
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         try {
@@ -528,20 +574,23 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             e.printStackTrace();
         }
     }
+
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         cameraSource.stop();
         cameraSource.release();
     }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
     }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         // Verileri kaydet
         super.onSaveInstanceState(outState);
-        if (response != null){
+        if (response != null) {
             outState.putParcelable(KEY_DELIVERY, response);
             outState.putIntegerArrayList(KEY_DELIVERYITEMS_SELECTED, selectedItemList);
             outState.putParcelableArrayList(KEY_DELIVERYITEMS_ADAPTER, (ArrayList<? extends Parcelable>) mAdapterRVDeliveryItem.listDelivery);
@@ -551,18 +600,19 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     //endregion
 
     //region $EVENTS
-    public void onClickBtnDeliveryNo(View v){
-        if( btnDeliveryNo.getId() == v.getId() ) {
-            showProgressDialog("",getApplicationContext().getString(R.string.read));
+    public void onClickBtnDeliveryNo(View v) {
+        if (btnDeliveryNo.getId() == v.getId()) {
+            showProgressDialog("", getApplicationContext().getString(R.string.read));
             openPopUpWindow(v);
             hideProgressDialog();
         }
     }
+
     public void onClickBtnStart(View v) {
         try {
-            if (response == null || response.get_deliveryNo() == ""){
+            if (response == null || response.get_deliveryNo() == "") {
                 showErrorDialog(getString(R.string.error_select_delivery));
-            }else if(response.get_status() == 0 || response.get_status() == -1){
+            } else if (response.get_status() == 0 || response.get_status() == -1) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage(getString(R.string.is_delivery_start));
                 builder.setCancelable(false);
@@ -593,15 +643,16 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             String a = e.getMessage();
         }
     }
+
     public void onClickBtnUndo(View v) {
         try {
-            if (response == null || response.get_deliveryNo() == ""){
+            if (response == null || response.get_deliveryNo() == "") {
                 showErrorDialog(getString(R.string.error_select_delivery));
-            }else if(response.get_status() == 1){
+            } else if (response.get_status() == 1) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage(getString(R.string.is_delivery_undo));
                 builder.setCancelable(false);
@@ -626,14 +677,15 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             String a = e.getMessage();
         }
     }
+
     public void onClickBtnFinish(View v) {
-        if (response != null && response.get_status() == 1){
+        if (response != null && response.get_status() == 1) {
             String errMessage = controlConditions();
-            if (errMessage.equals("")){
+            if (errMessage.equals("")) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage(getString(R.string.is_delivery_finish));
                 builder.setCancelable(false);
@@ -657,37 +709,21 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                 });
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
-            }else{
+            } else {
                 showErrorDialog(errMessage);
             }
-        }else{
+        } else {
             showErrorDialog(getString(R.string.error_finish));
         }
     }
-    public void onClickBtnAdd(View v) {
-        float iNumber = 0;
-        if (!String.valueOf(editNumber.getText()).equals("")){
-            iNumber = Float.valueOf(String.valueOf(editNumber.getText()));
-        }
-        editNumber.setText(String.valueOf(iNumber + 1.0f) + "00");
-    }
-    public void onClickBtnRemove(View v) {
-        float iNumber = 0;
-        if (!String.valueOf(editNumber.getText()).equals("")){
-            iNumber = Float.valueOf(String.valueOf(editNumber.getText()));
-            if (iNumber <= 0){
-                iNumber = 1.0f;
-            }
-        }
-        editNumber.setText(String.valueOf(iNumber - 1.0f) + "00");
-    }
+
     public void onClickBtnUpdate(View v) {
         try {
             float dNumber = 0;
-            if (!String.valueOf(editNumber.getText()).equals("")){
+            if (!String.valueOf(editNumber.getText()).equals("")) {
                 dNumber = Float.valueOf(String.valueOf(editNumber.getText()));
 
-                if (!response.equals(null)){
+                if (!response.equals(null)) {
                     mAdapterRVDeliveryItem.setSayimMiktar(selectedIndex, dNumber, "");
                     editNumber.setText("0.000");
                 }
@@ -697,6 +733,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             e.printStackTrace();
         }
     }
+
     public void onClickBtnChangeUser(View v) {
         try {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -725,11 +762,36 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             e.printStackTrace();
         }
     }
-    public void DeleteUser(){
+
+    public void DeleteUser() {
         SharedPreferences.Editor editor = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE).edit();
         editor.remove(KEY_USERNAME);
         editor.remove(KEY_PASSWORD);
         editor.apply();
+    }
+
+    private void startCamera() {
+        // Kamera başlatma kodları buraya eklenecek
+        if (!isCameraRunning) {
+            try {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                cameraSource.start(mSurfaceHolder);
+                isCameraRunning = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Hata durumunu ele alabilirsiniz
+            }
+        }
+    }
+
+    private void stopCamera() {
+        // Kamera durdurma kodları buraya eklenecek
+        if (isCameraRunning) {
+            cameraSource.stop();
+            isCameraRunning = false;
+        }
     }
     //endregion
 }

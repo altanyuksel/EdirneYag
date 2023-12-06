@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import Models.Delivery.DeliveryItem;
+import Models.Delivery.Palet;
 import Models.Delivery.ResponseDelivery;
 import Models.Delivery.User;
 import ServiceSetting.ServiceDefinitions;
@@ -77,6 +78,20 @@ public class ManagerAll extends BaseManager {
             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
             call = getRestApiClient().setDeliveryFinish(basicAuth, type, deliveryNo, requestBody);
         }
+        return call;
+    }
+    public Call<Palet> getPalet(String paletNo) {
+        String basicAuth = "";
+        try {
+            byte[] encrpt= (ServiceDefinitions.loginUser.get_userName() +":"+ ServiceDefinitions.loginUser.get_password()).getBytes("UTF-8");
+            basicAuth = Base64.encodeToString(encrpt, Base64.NO_WRAP);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            basicAuth = "";
+        }
+        basicAuth = "Basic " + basicAuth;
+
+        Call<Palet> call = getRestApiClient().getPalet(basicAuth, paletNo);
         return call;
     }
 }

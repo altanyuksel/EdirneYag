@@ -1,5 +1,6 @@
 package RestApi;
 
+import Models.Delivery.Palet;
 import Models.Delivery.ResponseDelivery;
 import Models.Delivery.User;
 import okhttp3.RequestBody;
@@ -29,4 +30,7 @@ public interface RestApi {
 
     @PUT("api/delivery/UndoDelivery")
     Call<String> setDeliveryUndo(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo);
+
+    @GET("api/delivery/palet")
+    Call<Palet> getPalet(@Header("Authorization") String basicAuth, @Query("paletNo") String paletNo);
 }

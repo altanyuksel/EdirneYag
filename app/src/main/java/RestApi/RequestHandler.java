@@ -6,6 +6,7 @@ import java.util.List;
 import Models.Delivery.Delivery;
 import Models.Delivery.DeliveryItem;
 import Models.Delivery.Paging;
+import Models.Delivery.Palet;
 import Models.Delivery.ResponseDelivery;
 import Models.Delivery.User;
 import ServiceSetting.ServiceDefinitions;
@@ -155,5 +156,17 @@ public class RequestHandler {
     }
     public void Clear(String waybillNo, String errorMessage){
         deliveryActivity.clearAll(waybillNo, errorMessage);
+    }
+    public Palet getPalet(String paletNo) {
+        Palet resPalet = null;
+        Call<Palet> call = ManagerAll.getInstance().getPalet(paletNo);
+        String res = "";
+        try {
+            resPalet = call.execute().body();
+        } catch (Exception exception) {
+            res = exception.getMessage();
+            return  null;
+        }
+        return resPalet;
     }
 }

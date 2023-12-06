@@ -49,4 +49,5 @@
     <string name="error_counting">Sayım miktarı yükleme miktarından büyük olamaz.</string>
     <string name="serial_no">Parti No:</string>
     <string name="order_creator_user">Siparişi Oluşturan:</string>
+    <string name="couldnot_find_pallet">Palet bulunamadı.</string>
 </resources>
