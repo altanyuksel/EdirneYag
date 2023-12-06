@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<testconfig
-    main_url="http://10.16.25.135:55"
+<linkconfig
+    main_url="http://10.16.25.135:57"
     mailAddress="altan.518@gmail.com"
     mailPassword="iftj xatj dxmx pnuh"
     mailHost="smtp.gmail.com"

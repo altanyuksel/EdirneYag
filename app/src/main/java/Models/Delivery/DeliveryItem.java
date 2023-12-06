@@ -1,6 +1,5 @@
 package Models.Delivery;
 
-import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 

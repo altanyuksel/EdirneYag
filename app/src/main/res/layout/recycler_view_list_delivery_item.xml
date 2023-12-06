@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/textview_bg"
+        android:orientation="horizontal"
+        app:reverseLayout="true">
+
+        <TextView
+            android:id="@+id/txtMalKodu"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_border"
+            android:paddingLeft="3sp"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/txtMalAdi"
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_border"
+            android:paddingLeft="3sp"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/txtMiktar"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_border"
+            android:paddingLeft="3sp"
+            android:textAlignment="center"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/txtSayimMiktar"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_border"
+            android:paddingLeft="3sp"
+            android:textAlignment="center"
+            android:textSize="15dp" />
+    </LinearLayout>
+</LinearLayout>
