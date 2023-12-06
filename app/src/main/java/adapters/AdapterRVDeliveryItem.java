@@ -58,12 +58,12 @@ public class AdapterRVDeliveryItem extends RecyclerView.Adapter<AdapterRVDeliver
         DeliveryItem selectedModelExample = listDelivery.get(position);
         holder.setData(selectedModelExample, position);
         if (listReadedBarcodeList.contains(position)) {
-            holder.txtMalkodu.setBackgroundColor(Color.YELLOW);
+//            holder.txtMalkodu.setBackgroundColor(Color.YELLOW);
             holder.txtMalAdi.setBackgroundColor(Color.YELLOW);
             holder.txtMiktar.setBackgroundColor(Color.YELLOW);
             holder.txtSayimMiktar.setBackgroundColor(Color.YELLOW);
         } else {
-            holder.txtMalkodu.setBackgroundColor(Color.WHITE);
+//            holder.txtMalkodu.setBackgroundColor(Color.WHITE);
             holder.txtMalAdi.setBackgroundColor(Color.WHITE);
             holder.txtMiktar.setBackgroundColor(Color.WHITE);
             holder.txtSayimMiktar.setBackgroundColor(Color.WHITE);
@@ -71,7 +71,7 @@ public class AdapterRVDeliveryItem extends RecyclerView.Adapter<AdapterRVDeliver
 
         // Ardından yeşil boyama işlemi
         if (selectedModelExample.getMiktar() == selectedModelExample.getMiktar2()) {
-            holder.txtMalkodu.setBackgroundColor(Color.GREEN);
+//            holder.txtMalkodu.setBackgroundColor(Color.GREEN);
             holder.txtMalAdi.setBackgroundColor(Color.GREEN);
             holder.txtMiktar.setBackgroundColor(Color.GREEN);
             holder.txtSayimMiktar.setBackgroundColor(Color.GREEN);
@@ -110,7 +110,7 @@ public class AdapterRVDeliveryItem extends RecyclerView.Adapter<AdapterRVDeliver
 
     //region $VIEWHOLDER CLASS
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
-        private TextView txtMalkodu, txtMalAdi, txtMiktar, txtSayimMiktar;
+        private TextView txtMalAdi, txtMiktar, txtSayimMiktar;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -119,14 +119,14 @@ public class AdapterRVDeliveryItem extends RecyclerView.Adapter<AdapterRVDeliver
         }
 
         private void initViews() {
-            txtMalkodu = itemView.findViewById(R.id.txtMalKodu);
+//            txtMalkodu = itemView.findViewById(R.id.txtMalKodu);
             txtMalAdi = itemView.findViewById(R.id.txtMalAdi);
             txtMiktar = itemView.findViewById(R.id.txtMiktar);
             txtSayimMiktar = itemView.findViewById(R.id.txtSayimMiktar);
         }
 
         public void setData(DeliveryItem selectedModelExample, int position) {
-            txtMalkodu.setText(selectedModelExample.getMateryalKodu());
+//            txtMalkodu.setText(selectedModelExample.getMateryalKodu());
             txtMalAdi.setText(selectedModelExample.getMateryalAdi());
             txtMiktar.setText(dform.format(selectedModelExample.getMiktar()));
             txtSayimMiktar.setText(dform.format(selectedModelExample.getMiktar2()));

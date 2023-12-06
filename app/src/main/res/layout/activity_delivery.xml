@@ -120,7 +120,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="30"
                     android:ems="10"
-                    android:text="Y. Miktarı">
+                    android:text="0">
                 </EditText>
             </LinearLayout>
         </LinearLayout>
@@ -147,7 +147,7 @@
         android:scrollbars="none">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
             <LinearLayout
                 android:layout_width="match_parent"
@@ -179,13 +179,13 @@
             <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/scroll"
                 android:layout_width="match_parent"
-                android:layout_height="225dp">
+                android:layout_height="match_parent">
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recViewDeliveryItemList"
                     android:layout_width="match_parent"
                     android:padding="1sp"
                     app:reverseLayout="true"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent" />
             </ScrollView>
         </LinearLayout>
     </HorizontalScrollView>
