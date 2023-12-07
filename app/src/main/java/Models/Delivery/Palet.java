@@ -107,4 +107,7 @@ public class Palet implements Parcelable {
         seriNo = in.readString();
         miktar = in.readFloat();
     }
+    public Palet() {
+        // İhtiyaç durumuna göre default değerler atanabilir.
+    }
 }

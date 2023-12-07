@@ -53,6 +53,7 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.util.ArrayList;
 
+import Models.Delivery.DeliveryItem;
 import Models.Delivery.Palet;
 import adapters.AdapterRVDeliveryItem;
 import Models.Delivery.Delivery;
@@ -80,6 +81,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private TextView txtBarcodeValue, txtVehicle, txtUsername, txtMalAdi, txtPaletMiktar;
 
     public static String strCountDeliveryNo, barcodeString;
+    public static Palet readedPalet;
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
     private static final int REQUEST_CAMERA_PERMISSION = 201;
@@ -299,6 +301,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     private void initializeDetectorsAndSources() {
         barcodeString = "";
+        readedPalet = new Palet();
         Log.d(TAG, "initializeDetectorsAndSources: Barcode scan is start.");
         barcodeDetector = new BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.ALL_FORMATS).build();
         cameraSource = new CameraSource.Builder(this, barcodeDetector)
@@ -374,10 +377,10 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     public void setDeliveryRows(String readedBarcode) {
-        Palet palet = requestHandler.getPalet(readedBarcode);
-        if (palet != null){
-            txtMalAdi.setText(palet.getMateryalAdi());
-            txtPaletMiktar.setText(String.valueOf(palet.getMiktar()));
+        readedPalet = requestHandler.getPalet(readedBarcode);
+        if (readedPalet != null){
+            txtMalAdi.setText(readedPalet.getMateryalAdi());
+            txtPaletMiktar.setText(String.valueOf(readedPalet.getMiktar()));
             editNumber.setText("0");
         }else{
             showToastMessage(getString(R.string.couldnot_find_pallet), Toast.LENGTH_LONG, Gravity.TOP);
@@ -724,8 +727,17 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                 dNumber = Float.valueOf(String.valueOf(editNumber.getText()));
 
                 if (!response.equals(null)) {
-                    mAdapterRVDeliveryItem.setSayimMiktar(selectedIndex, dNumber, "");
-                    editNumber.setText("0.000");
+                    for (DeliveryItem item: response.get_deliveryItem()) {
+                        if (item.getMateryalAdi() == txtMalAdi.getText()){
+                            Palet pal = readedPalet;
+                            pal.setMiktar(Float.valueOf(String.valueOf(editNumber.getText())));
+                            item.addPalet(pal);
+                            mAdapterRVDeliveryItem.setSayimMiktar(selectedIndex, dNumber, "");
+                            txtMalAdi.setText("");
+                            txtPaletMiktar.setText("0");
+                            editNumber.setText("0");
+                        }
+                    }
                 }
             }
 

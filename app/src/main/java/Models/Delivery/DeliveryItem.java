@@ -25,7 +25,7 @@ public class DeliveryItem implements Parcelable {
     private float miktar2;
 
     @SerializedName("Palet")
-    private List<Palet> palet;
+    private List<Palet> palets;
 
     @SerializedName("SiparisNo")
     private String siparisNo;
@@ -64,12 +64,18 @@ public class DeliveryItem implements Parcelable {
         return miktar2;
     }
 
-    public List<Palet> getPalet() {
-        return palet;
+    public List<Palet> getPalets() {
+        return palets;
     }
 
-    public void setPalet(List<Palet> palet) {
-        this.palet = palet;
+    public void setPalets(List<Palet> palets) {
+        this.palets = palets;
+    }
+    public void addPalet(Palet palet) {
+        if (this.palets == null){
+            this.palets = new ArrayList<>();
+        }
+        this.palets.add(palet);
     }
 
     public String getMateryalKodu(){
@@ -90,7 +96,7 @@ public class DeliveryItem implements Parcelable {
         dest.writeString(siparisNo);
         dest.writeInt(siparisSiraNo);
         dest.writeFloat(siparisMiktar);
-        dest.writeList(palet);
+        dest.writeList(palets);
     }
 
     @Override
@@ -119,7 +125,7 @@ public class DeliveryItem implements Parcelable {
         siparisNo = in.readString();
         siparisSiraNo = in.readInt();
         siparisMiktar = in.readFloat();
-        palet = new ArrayList<>();
-        in.readList(palet,List.class.getClassLoader());
+        palets = new ArrayList<>();
+        in.readList(palets,List.class.getClassLoader());
     }
 }
