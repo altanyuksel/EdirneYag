@@ -154,8 +154,8 @@ public class RequestHandler {
             }
         });
     }
-    public void Clear(String waybillNo, String errorMessage){
-        deliveryActivity.clearAll(waybillNo, errorMessage);
+    public void Clear(String docNo, String errorMessage){
+        deliveryActivity.clearAll(docNo, errorMessage);
     }
     public Palet getPalet(String paletNo) {
         Palet resPalet = null;

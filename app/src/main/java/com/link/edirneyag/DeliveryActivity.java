@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.util.ArrayList;
+import java.util.List;
 
 import Models.Delivery.DeliveryItem;
 import Models.Delivery.Palet;
@@ -291,9 +292,9 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         }
     }
 
-    private void finishDelivery(String deliveryNo) throws Exception {
+    private void finishDelivery(String deliveryNo, List<DeliveryItem> listItem) throws Exception {
         if (response.get_status() == 1) {
-            requestHandler.setDeliveryStatus(deliveryNo, 2, this, response.get_deliveryItem());
+            requestHandler.setDeliveryStatus(deliveryNo, 2, this, listItem);
         } else {
             showErrorDialog(getString(R.string.error_finish));
         }
@@ -470,9 +471,9 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         }
     }
 
-    public void clearAll(String waybillNo, String errorMessage) {
+    public void clearAll(String docNo, String errorMessage) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        String message = getString(R.string.finish_delivery) + "(" + getString(R.string.waybillno) + ":" + waybillNo + ")";
+        String message = getString(R.string.finish_delivery) + "(" + getString(R.string.documentNo) + ":" + docNo + ")";
         if (!errorMessage.equals("")) {
             message = getString(R.string.error) + errorMessage;
         }
@@ -678,7 +679,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
                         try {
-                            finishDelivery(strCountDeliveryNo);
+                            finishDelivery(strCountDeliveryNo, mAdapterRVDeliveryItem.listDelivery);
                             response.set_status(2);
                             selectedIndex = -1;
                         } catch (Exception e) {
