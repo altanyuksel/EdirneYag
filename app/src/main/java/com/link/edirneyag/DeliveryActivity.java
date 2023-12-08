@@ -332,7 +332,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                                     barcodeString = barcodes.valueAt(0).displayValue;
                                     txtBarcodeValue.setText(barcodeString);
                                     Log.d(TAG, "initializeDetectorsAndSources: barcode was scanned. scanned string : " + barcodeString);
-                                    setDeliveryRows(barcodeString);
+                                    setPaletRows(barcodeString);
                                     showToastMessage(barcodeString, Toast.LENGTH_LONG, Gravity.TOP);
                                 }
                             }
@@ -376,44 +376,26 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         progressDialog.dismiss();
     }
 
-    public void setDeliveryRows(String readedBarcode) {
+    public void setPaletRows(String readedBarcode) {
         readedPalet = requestHandler.getPalet(readedBarcode);
-        if (readedPalet != null){
+        selectedIndex = -1;
+        int index = -1;
+        for (DeliveryItem item: mAdapterRVDeliveryItem.listDelivery) {
+            index++;
+            if (item.getMateryalKodu().equals(readedPalet.getMateryalKodu())){
+                selectedIndex = index;
+                break;
+            }
+        }
+        if (readedPalet == null) {
+            showToastMessage(getString(R.string.couldnot_find_pallet), Toast.LENGTH_LONG, Gravity.TOP);
+        }else if(index == -1){
+            showToastMessage(getString(R.string.couldnot_find_pallet_delivery), Toast.LENGTH_LONG, Gravity.TOP);
+        } else {
             txtMalAdi.setText(readedPalet.getMateryalAdi());
             txtPaletMiktar.setText(String.valueOf(readedPalet.getMiktar()));
             editNumber.setText("0");
-        }else{
-            showToastMessage(getString(R.string.couldnot_find_pallet), Toast.LENGTH_LONG, Gravity.TOP);
         }
-
-        //        if (!response.equals(null)){
-//            for (DeliveryItem item: response.get_deliveryItem()) {
-//                for (String barcode: item.getMateryalKodu()) {
-//                    if (barcode.equalsIgnoreCase(readedBarcode)){
-//                        int index = response.get_deliveryItem().indexOf(item);
-//                        if (!selectedItemList.contains(index)) {
-//                            selectedItemList.add(index);
-//                        }
-//                        selectedIndex = index;
-//                        if (miktar == 1) {
-//                            miktar += mAdapterRVDeliveryItem.listDelivery.get(selectedIndex).getMiktar2();
-//                        }
-//
-//                        if (mAdapterRVDeliveryItem.listDelivery.get(selectedIndex).getMiktar() >= miktar){
-//                            SoundManager.playSound(this, R.raw.beep);
-//                            mAdapterRVDeliveryItem.setSayimMiktar(selectedIndex, miktar, seriNo);
-//                            editNumber.setText("0.000");
-//                        }
-//                        mAdapterRVDeliveryItem.listReadedBarcodeList = selectedItemList;
-//                        for (int i = 0; i <= mAdapterRVDeliveryItem.listDelivery.size()-1; i++){
-//                            mAdapterRVDeliveryItem.notifyItemChanged(i);
-//                        }
-//                        mAdapterRVDeliveryItem.notifyDataSetChanged();
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
     }
 
     private void openPopUpWindow(View v) {
@@ -613,7 +595,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     public void onClickBtnStart(View v) {
         try {
-            if (response == null || response.get_deliveryNo() == "") {
+            if (response == null || response.get_deliveryNo().isEmpty()) {
                 showErrorDialog(getString(R.string.error_select_delivery));
             } else if (response.get_status() == 0 || response.get_status() == -1) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -653,7 +635,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     public void onClickBtnUndo(View v) {
         try {
-            if (response == null || response.get_deliveryNo() == "") {
+            if (response == null || response.get_deliveryNo().isEmpty()) {
                 showErrorDialog(getString(R.string.error_select_delivery));
             } else if (response.get_status() == 1) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -726,9 +708,9 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             if (!String.valueOf(editNumber.getText()).equals("")) {
                 dNumber = Float.valueOf(String.valueOf(editNumber.getText()));
 
-                if (!response.equals(null)) {
-                    for (DeliveryItem item: response.get_deliveryItem()) {
-                        if (item.getMateryalAdi() == txtMalAdi.getText()){
+                if (mAdapterRVDeliveryItem.listDelivery != null && readedPalet != null) {
+                    for (DeliveryItem item: mAdapterRVDeliveryItem.listDelivery) {
+                        if (item.getMateryalKodu().equals(readedPalet.getMateryalKodu())){
                             Palet pal = readedPalet;
                             pal.setMiktar(Float.valueOf(String.valueOf(editNumber.getText())));
                             item.addPalet(pal);

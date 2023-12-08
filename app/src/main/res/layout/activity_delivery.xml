@@ -58,7 +58,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="15"
+        android:layout_weight="10"
         android:orientation="horizontal"
         android:gravity="top">
         <LinearLayout
@@ -69,8 +69,7 @@
             android:orientation="vertical">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="50"
+                android:layout_height="wrap_content"
                 android:layout_gravity="top"
                 android:orientation="horizontal">
                 <TextView
@@ -85,44 +84,41 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="30"
-                    android:text="Palet Miktarı">
+                    android:text="Miktar">
                 </TextView>
                 <TextView
                     android:id="@+id/txtYuklemeMiktarH"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="30"
-                    android:text="Yükleme Miktarı">
+                    android:text="Yük. Mik.">
                 </TextView>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="50"
-                android:layout_gravity="top"
+                android:layout_height="match_parent"
                 android:orientation="horizontal">
                 <TextView
                     android:id="@+id/txtMalAdi"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="40"
-                    android:text="Mal Adı">
+                    android:text="">
                 </TextView>
                 <TextView
                     android:id="@+id/txtPaletMiktar"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="30"
-                    android:text="Palet Miktarı">
+                    android:text="">
                 </TextView>
                 <EditText
                     android:id="@+id/editSayim"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="30"
                     android:ems="10"
-                    android:text="0"
-                    android:textSize="15dp">
+                    android:text="">
                 </EditText>
             </LinearLayout>
         </LinearLayout>
@@ -145,7 +141,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        android:layout_weight="45"
+        android:layout_weight="50"
         android:scrollbars="none">
         <LinearLayout
             android:layout_width="match_parent"

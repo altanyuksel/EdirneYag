@@ -20,7 +20,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DeliveryActivity"/>
+            android:name=".DeliveryActivity"
+            android:windowSoftInputMode="adjustPan" />
     </application>
     <uses-feature
         android:name="android.hardware.camera"
