@@ -507,10 +507,6 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         mAdapterRVDeliveryItem.listDelivery.clear();
         mAdapterRVDeliveryItem.notifyItemRangeRemoved(0, size);
 
-//        btnStart.setBackgroundColor(Color.RED);
-//        btnUndo.setBackgroundColor(Color.RED);
-//        btnFinish.setBackgroundColor(Color.RED);
-
         btnStart.setEnabled(false);
         btnUndo.setEnabled(false);
         btnFinish.setEnabled(false);
@@ -608,7 +604,6 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                         try {
                             startDelivery(strCountDeliveryNo);
                             selectedIndex = -1;
-//                            btnStart.setBackgroundColor(Color.RED);
                             btnUndo.setBackgroundColor(Color.GREEN);
                             btnFinish.setBackgroundColor(Color.GREEN);
 
