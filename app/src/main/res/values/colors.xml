@@ -27,4 +27,5 @@
     <color name="Navy">#FF000080</color>
     <color name="Fuchsia">#FFFF00FF</color>
     <color name="Purple">#FF800080</color>
+    <color name="LightGray">#FFC0C0C0</color>
 </resources>
