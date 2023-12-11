@@ -381,10 +381,18 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         readedPalet = requestHandler.getPalet(readedBarcode);
         selectedIndex = -1;
         int index = -1;
+        boolean isExist = false;
         for (DeliveryItem item: mAdapterRVDeliveryItem.listDelivery) {
             index++;
             if (item.getMateryalKodu().equals(readedPalet.getMateryalKodu())){
                 selectedIndex = index;
+                if(item.getPalets() != null){
+                    for (Palet itemPalet : item.getPalets()) {
+                        if (itemPalet != null && itemPalet.getSeriNo().equals(readedPalet.getSeriNo())){
+                            isExist = true;
+                        }
+                    }
+                }
                 break;
             }
         }
@@ -396,6 +404,10 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             txtMalAdi.setText(readedPalet.getMateryalAdi());
             txtPaletMiktar.setText(String.valueOf(readedPalet.getMiktar()));
             editNumber.setText("0");
+            btnUpdate.setText("Ekle");
+            if(isExist){
+                btnUpdate.setText("Çıkar");
+            }
         }
     }
 
