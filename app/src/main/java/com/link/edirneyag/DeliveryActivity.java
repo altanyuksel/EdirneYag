@@ -459,6 +459,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             info += ", Soför Ad - Soyad: " + response.get_driverName() + " " + response.get_driverSurname();
             info += ", Soför TCKN: " + response.get_driverTCKN();
             info += ", Soför Tel: " + response.get_driverPhone();
+            txtVehicle.setText(info);
             ClearPalletRow();
             hideProgressDialog();
             if (response.get_status() == 0) {
