@@ -404,9 +404,9 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             txtMalAdi.setText(readedPalet.getMateryalAdi());
             txtPaletMiktar.setText(String.valueOf(readedPalet.getMiktar()));
             editNumber.setText("0");
-            btnUpdate.setText("Ekle");
+            btnUpdate.setText(R.string.add);
             if(isExist){
-                btnUpdate.setText("Çıkar");
+                btnUpdate.setText(R.string.fix);
             }
         }
     }
@@ -459,7 +459,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             info += ", Soför Ad - Soyad: " + response.get_driverName() + " " + response.get_driverSurname();
             info += ", Soför TCKN: " + response.get_driverTCKN();
             info += ", Soför Tel: " + response.get_driverPhone();
-            txtVehicle.setText(info);
+            ClearPalletRow();
             hideProgressDialog();
             if (response.get_status() == 0) {
                 btnStart.setBackgroundColor(Color.GREEN);
@@ -712,20 +712,40 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     public void onClickBtnUpdate(View v) {
         try {
-            float dNumber = 0;
+            float dNumber = 0, quantity = 0, fixedQuantity = 0;
             if (!String.valueOf(editNumber.getText()).equals("")) {
                 dNumber = Float.valueOf(String.valueOf(editNumber.getText()));
-
                 if (mAdapterRVDeliveryItem.listDelivery != null && readedPalet != null) {
+                    if(dNumber > readedPalet.getMiktar()){
+                        showErrorDialog(getString(R.string.error_counting));
+                        editNumber.setText("0");
+                        return;
+                    }
                     for (DeliveryItem item: mAdapterRVDeliveryItem.listDelivery) {
                         if (item.getMateryalKodu().equals(readedPalet.getMateryalKodu())){
                             Palet pal = readedPalet;
-                            pal.setMiktar(Float.valueOf(String.valueOf(editNumber.getText())));
-                            item.addPalet(pal);
-                            mAdapterRVDeliveryItem.setSayimMiktar(selectedIndex, dNumber, "");
-                            txtMalAdi.setText("");
-                            txtPaletMiktar.setText("0");
-                            editNumber.setText("0");
+                            if(item.getPalets() != null){
+                                int index = -1;
+                                for(int i = 0; i < item.getPalets().size()-1; i++){
+                                    if (item.getPalets().get(i).getSeriNo().equals(pal.getSeriNo())){
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index == -1){
+                                    pal.setMiktar(dNumber);
+                                    item.addPalet(pal);
+                                } else {
+                                    fixedQuantity = - item.getPalets().get(index).getMiktar();;
+                                    item.getPalets().get(index).setMiktar(dNumber);
+                                }
+                            } else {
+                                pal.setMiktar(dNumber);
+                                item.addPalet(pal);
+                            }
+                            quantity = mAdapterRVDeliveryItem.listDelivery.get(selectedIndex).getMiktar2();
+                            mAdapterRVDeliveryItem.setSayimMiktar(selectedIndex, quantity + dNumber + fixedQuantity, "");
+                            ClearPalletRow();
                         }
                     }
                 }
@@ -794,6 +814,14 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             cameraSource.stop();
             isCameraRunning = false;
         }
+    }
+
+    private void ClearPalletRow(){
+        txtMalAdi.setText("");
+        txtPaletMiktar.setText("");
+        editNumber.setText("0");
+        btnUpdate.setText(R.string.add);
+        readedPalet = null;
     }
     //endregion
 }

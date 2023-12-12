@@ -53,5 +53,6 @@
     <string name="couldnot_find_pallet_delivery">Yükleme listesinde bu palet bulunamadı.</string>
     <string name="delivery_quantity">Yük. Mik.</string>
     <string name="add">Ekle</string>
+    <string name="fix">Düzelt</string>
     <string name="process">İşlem</string>
 </resources>
