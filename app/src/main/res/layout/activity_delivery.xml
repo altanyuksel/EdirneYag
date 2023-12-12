@@ -44,15 +44,11 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <TextView
-                android:id="@+id/txtVehicle"
+            <WebView
+                android:id="@+id/webViewVehicle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#1234"
-                android:padding="1dp"
-                android:textSize="10dp"
-                android:textStyle="bold"
-                android:text=""/>
+                android:textAlignment="center"/>
         </LinearLayout>
     </LinearLayout>
     <LinearLayout

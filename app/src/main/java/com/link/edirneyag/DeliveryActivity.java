@@ -34,6 +34,7 @@ import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -79,8 +80,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     private SurfaceView surfaceViewDelivery;
     private SurfaceHolder mSurfaceHolder;
-    private TextView txtBarcodeValue, txtVehicle, txtUsername, txtMalAdi, txtPaletMiktar;
-
+    private TextView txtBarcodeValue, txtUsername, txtMalAdi, txtPaletMiktar;
+    private WebView webViewVehicle;
     public static String strCountDeliveryNo, barcodeString;
     public static Palet readedPalet;
     private BarcodeDetector barcodeDetector;
@@ -166,7 +167,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         surfaceViewDelivery = findViewById(R.id.surfaceViewDelivery);
         txtBarcodeValue = findViewById(R.id.txtBarcodeValue);
         btnUpdate = findViewById(R.id.btnUpdate);
-        txtVehicle = findViewById(R.id.txtVehicle);
+//        txtVehicle = findViewById(R.id.txtVehicle);
+        webViewVehicle = findViewById(R.id.webViewVehicle);
         txtUsername = findViewById(R.id.txtUsername);
         recViewDeliveryList = findViewById(R.id.recViewDeliveryItemList);
         btnChangeUser = findViewById(R.id.btnChangeUser);
@@ -459,7 +461,11 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             info += ", Soför Ad - Soyad: " + response.get_driverName() + " " + response.get_driverSurname();
             info += ", Soför TCKN: " + response.get_driverTCKN();
             info += ", Soför Tel: " + response.get_driverPhone();
-            txtVehicle.setText(info);
+//            txtVehicle.setText(info);
+//            String htmlContent = "<html><body><h1>Hello, World!</h1></body></html>";
+            String htmlContent = setWebViewVehicleInfo();
+            webViewVehicle.loadData(htmlContent, "text/html", "UTF-8");
+
             ClearPalletRow();
             hideProgressDialog();
             if (response.get_status() == 0) {
@@ -509,7 +515,9 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     private void clearPage() {
         btnDeliveryNo.setText(getString(R.string.delivery_no));
-        txtVehicle.setText("");
+//        txtVehicle.setText("");
+        String htmlContent = "<html><body><h1></h1></body></html>";
+        webViewVehicle.loadData(htmlContent, "text/html", "UTF-8");
         strCountDeliveryNo = "";
         selectedItemList.clear();
         mAdapterRVDeliveryItem.listReadedBarcodeList.clear();
@@ -823,6 +831,32 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         editNumber.setText("0");
         btnUpdate.setText(R.string.add);
         readedPalet = null;
+    }
+    private String setWebViewVehicleInfo(){
+        String htmlContent = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "\n" +
+                "  <table style=\"width: 100%; border-collapse: collapse;\">\n" +
+                "    <tr>\n" +
+                "      <td style=\"border: 1px solid black; padding: 1px; text-align: center; font-size: 12px;\"><b>Plaka</b></td>\n" +
+                "      <td style=\"border: 1px solid black; padding: 1px; text-align: center; font-size: 12px;\"><b>Şoför Ad-Soyad</b></td>\n" +
+                "      <td style=\"border: 1px solid black; padding: 1px; text-align: center; font-size: 12px;\"><b>Şoför TCKN</b></td>\n" +
+                "      <td style=\"border: 1px solid black; padding: 1px; text-align: center; font-size: 12px;\"><b>Şoför Tel</b></td>\n" +
+                "    </tr>\n" +
+                "    <tr>\n" +
+                "      <td style=\"border: 1px solid black; padding: 1px; text-align: center; font-size: 12px;\">"+response.get_plate()+"</td>\n" +
+                "      <td style=\"border: 1px solid black; padding: 1px; text-align: center; font-size: 12px;\">"+response.get_driverName() + " " + response.get_driverSurname()+"</td>\n" +
+                "      <td style=\"border: 1px solid black; padding: 1px; text-align: center; font-size: 12px;\">"+response.get_driverTCKN()+"</td>\n" +
+                "      <td style=\"border: 1px solid black; padding: 1px; text-align: center; font-size: 12px;\">"+response.get_driverPhone()+"</td>\n" +
+                "    </tr>\n" +
+                "  </table>\n" +
+                "\n" +
+                "</body>\n" +
+                "</html>";
+        return htmlContent;
     }
     //endregion
 }
