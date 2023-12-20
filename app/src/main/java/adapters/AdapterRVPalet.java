@@ -16,20 +16,19 @@ import com.link.edirneyag.R;
 
 import Models.Delivery.Delivery;
 import Models.Delivery.PalletsInfo;
-import Models.Delivery.ResponseDelivery;
 
 public class AdapterRVPalet extends RecyclerView.Adapter<AdapterRVPalet.ViewHolder> {
     //region $MEMBERS
-    private ResponseDelivery listCountOrder;
+    private Delivery delivery;
     private LayoutInflater inflater;
     private Context mContext;
     private DeliveryActivity activity;
     //endregion
 
     //region $METHODS
-    public AdapterRVPalet(Context context, ResponseDelivery listCountOrder, DeliveryActivity activity) {
+    public AdapterRVPalet(Context context, Delivery delivery, DeliveryActivity activity) {
         inflater = LayoutInflater.from(context);
-        this.listCountOrder = listCountOrder;
+        this.delivery = delivery;
         this.mContext = context;
         this.activity = activity;
     }
@@ -45,14 +44,7 @@ public class AdapterRVPalet extends RecyclerView.Adapter<AdapterRVPalet.ViewHold
     }
     @Override
     public void onBindViewHolder(AdapterRVPalet.ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
-        Delivery selectedModelExample = listCountOrder.getListItem().get(position);
-        holder.setData(selectedModelExample);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                activity.closePopupPallet();
-            }
-        });
+        holder.setData(delivery.get_palletsInfoList().get(position));
     }
     @Override
     public long getItemId(int position) {
@@ -60,7 +52,7 @@ public class AdapterRVPalet extends RecyclerView.Adapter<AdapterRVPalet.ViewHold
     }
     @Override
     public int getItemCount() {
-        return listCountOrder.getListItem().size();
+        return delivery.get_palletsInfoList().size();
     }
     //endregion
 
@@ -80,12 +72,10 @@ public class AdapterRVPalet extends RecyclerView.Adapter<AdapterRVPalet.ViewHold
             editPalletQuantity = itemView.findViewById(R.id.editPalletQuantity);
         }
 
-        public void setData(Delivery selectedModelExample) {
-            for (PalletsInfo item : selectedModelExample.get_palletsInfoList()) {
-                txtCustomerCode.setText(item.getCustomer().get_customerCode());
-                txtCustomerTitle.setText(item.getCustomer().get_customerTitle());
-                editPalletQuantity.setText("0");
-            }
+        public void setData(PalletsInfo item) {
+            txtCustomerCode.setText(item.getCustomer().get_customerCode());
+            txtCustomerTitle.setText(item.getCustomer().get_customerTitle());
+            editPalletQuantity.setText("0");
         }
     }
     //endregion

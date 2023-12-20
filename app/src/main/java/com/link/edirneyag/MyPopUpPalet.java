@@ -19,6 +19,7 @@ import com.android.volley.RequestQueue;
 
 import java.net.CookieManager;
 
+import Models.Delivery.Delivery;
 import Models.Delivery.ResponseDelivery;
 import RestApi.RequestHandler;
 import ServiceSetting.ServiceDefinitions;
@@ -29,7 +30,7 @@ class MyPopUpPalet {
     private final String TAG = "DELIVERY_SELECT";
     private static ServiceDefinitions serviceDefinitions;
     private PopupWindow popupWindow;
-    private ResponseDelivery response;
+    private Delivery response;
     private ProgressDialog progressDialog;
     private AdapterRVPalet mAdapterRVPalet;
     private RecyclerView recViewDeliveryList;
@@ -46,10 +47,11 @@ class MyPopUpPalet {
     //endregion
 
     //region $METHODS
-    public MyPopUpPalet(RequestQueue mReqQueue, ServiceDefinitions serviceDefinitions, CookieManager cookieManage, final View mainView, DeliveryActivity mainAct) {
+    public MyPopUpPalet(RequestQueue mReqQueue, ServiceDefinitions serviceDefinitions, CookieManager cookieManage, final View mainView, DeliveryActivity mainAct, Delivery response) {
         this.serviceDefinitions = serviceDefinitions;
         this.mainView = mainView;
         this.mainAct = mainAct;
+        this.response = response;
     }
     private void initErrorDialog() {
         errDialog = new AlertDialog.Builder(mainAct);
@@ -59,7 +61,6 @@ class MyPopUpPalet {
         requestHandler = new RequestHandler();
         inflater = (LayoutInflater) mainView.getContext().getSystemService(mainView.getContext().LAYOUT_INFLATER_SERVICE);
         initViews();
-        initDefinations();
         initErrorDialog();
         //Make Inactive Items Outside Of PopupWindow
         boolean focusable = true;
@@ -102,9 +103,6 @@ class MyPopUpPalet {
             }
         });
     }
-    private void initDefinations() {
-        response = new ResponseDelivery();
-    }
     private void fillList() {
         if (!serviceDefinitions.equals(null)) {
             showProgressDialog(mainView.getContext().getString(R.string.list_count_order), "");
@@ -118,7 +116,6 @@ class MyPopUpPalet {
                     showErrorDialog(mainAct.getString(R.string.error_credential));
                     return;
                 }
-                response = requestHandler.getAllDeliveryList();
                 setDeliveryListView();
                 hideProgressDialog();
             } catch (Exception exception) {
