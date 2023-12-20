@@ -20,7 +20,13 @@
                 android:layout_weight="40"
                 android:padding="4dp"
                 android:text="@string/delivery"></Button>
-
+            <Button
+                android:id="@+id/btnPallet"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="30"
+                android:padding="4dp"
+                android:text="@string/pallet"></Button>
             <Button
                 android:id="@+id/btnStart"
                 android:layout_width="0dp"
@@ -239,7 +245,6 @@
                 android:layout_gravity="center"
                 android:textColor="@android:color/black"
                 android:textSize="20sp" />
-
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

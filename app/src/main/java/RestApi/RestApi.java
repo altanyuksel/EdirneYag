@@ -33,4 +33,7 @@ public interface RestApi {
 
     @GET("api/delivery/palet")
     Call<Palet> getPalet(@Header("Authorization") String basicAuth, @Query("paletNo") String paletNo);
+
+    @POST("api/delivery/PalletQuantityDelivery")
+    Call<String> setDeliveryPalletQuantity(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo, @Body RequestBody requestBody);
 }

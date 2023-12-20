@@ -17,11 +17,8 @@ public class Delivery implements Parcelable {
     @SerializedName("SevkiyatDurumu")
     private int _status;
 
-    @SerializedName("HesapKodu")
-    private String _customerCode;
-
-    @SerializedName("Unvan")
-    private String _customerTitle;
+    @SerializedName("PaletBilgileri")
+    private List<PalletsInfo> _palletsInfoList;
 
     @SerializedName("Tarih")
     private String _date;
@@ -84,12 +81,12 @@ public class Delivery implements Parcelable {
         return _deliveryType;
     }
 
-    public String get_customerTitle(){
-        return _customerTitle;
+    public List<PalletsInfo> get_palletsInfoList() {
+        return _palletsInfoList;
     }
 
-    public String get_customerCode(){
-        return _customerCode;
+    public void set_palletsInfoList(List<PalletsInfo> _palletsInfoList) {
+        this._palletsInfoList = _palletsInfoList;
     }
 
     public String get_driverName(){
@@ -134,8 +131,7 @@ public class Delivery implements Parcelable {
         dest.writeString(_deliveryNo);
         dest.writeInt(_deliveryType);
         dest.writeInt(_status);
-        dest.writeString(_customerCode);
-        dest.writeString(_customerTitle);
+        dest.writeList(_palletsInfoList);
         dest.writeString(_date);
         dest.writeString(_deliveryDate);
         dest.writeString(_wareHouse);
@@ -164,8 +160,8 @@ public class Delivery implements Parcelable {
         _deliveryNo= in.readString();
         _deliveryType= in.readInt();
         _status= in.readInt();
-        _customerCode= in.readString();
-        _customerTitle= in.readString();
+        _palletsInfoList = new ArrayList<>();
+        in.readList(_palletsInfoList,List.class.getClassLoader());
         _date= in.readString();
         _deliveryDate= in.readString();
         _wareHouse= in.readString();

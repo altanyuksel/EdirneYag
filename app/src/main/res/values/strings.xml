@@ -55,4 +55,8 @@
     <string name="add">Ekle</string>
     <string name="fix">Düzelt</string>
     <string name="process">İşlem</string>
+    <string name="customer_code">Müşteri Kodu</string>
+    <string name="customer_title">Müşteri Ünvan</string>
+    <string name="piece">Adet</string>
+    <string name="pallet">Palet</string>
 </resources>

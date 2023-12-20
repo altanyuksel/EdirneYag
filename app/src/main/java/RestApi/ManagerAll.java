@@ -9,6 +9,7 @@ import java.util.List;
 
 import Models.Delivery.DeliveryItem;
 import Models.Delivery.Palet;
+import Models.Delivery.PalletsInfo;
 import Models.Delivery.ResponseDelivery;
 import Models.Delivery.User;
 import ServiceSetting.ServiceDefinitions;
@@ -77,6 +78,26 @@ public class ManagerAll extends BaseManager {
             String json = gson.toJson(items);
             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
             call = getRestApiClient().setDeliveryFinish(basicAuth, type, deliveryNo, requestBody);
+        }
+        return call;
+    }
+    public Call<String> setDeliveryPalletQuantity(int type, String deliveryNo, int status, List<PalletsInfo> items) {
+        String basicAuth = "";
+        try {
+            byte[] encrpt= (ServiceDefinitions.loginUser.get_userName() +":"+ ServiceDefinitions.loginUser.get_password()).getBytes("UTF-8");
+            basicAuth = Base64.encodeToString(encrpt, Base64.NO_WRAP);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            basicAuth = "";
+        }
+        basicAuth = "Basic " + basicAuth;
+
+        Call<String> call = null;
+        if (status == 2) {
+            gson = new Gson();
+            String json = gson.toJson(items);
+            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
+            call = getRestApiClient().setDeliveryPalletQuantity(basicAuth, type, deliveryNo, requestBody);
         }
         return call;
     }

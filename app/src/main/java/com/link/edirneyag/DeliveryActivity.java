@@ -57,6 +57,7 @@ import java.util.List;
 
 import Models.Delivery.DeliveryItem;
 import Models.Delivery.Palet;
+import Models.Delivery.PalletsInfo;
 import adapters.AdapterRVDeliveryItem;
 import Models.Delivery.Delivery;
 import RestApi.RequestHandler;
@@ -70,12 +71,13 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private Context mContext;
     private ProgressDialog progressDialog;
     //    private Button btnAdd, btnRemove, btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser;
-    private Button btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser;
+    private Button btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser, btnPalet;
     private EditText editNumber;
 
     AlertDialog.Builder errDialog;
     private CookieManager cookieManage; //Yeni nesil servisi cookie kullandığından cookie set ediyoruz. Bunu yapmazsak çalışmıyor.
     private MyPopUpWindow popUpClass;
+    private MyPopUpPalet popUpClassPallet;
     public RequestHandler requestHandler;
 
     private SurfaceView surfaceViewDelivery;
@@ -176,6 +178,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         txtMalAdi = findViewById(R.id.txtMalAdi);
         txtPaletMiktar = findViewById(R.id.txtPaletMiktar);
         editNumber = findViewById(R.id.editSayim);
+        btnPalet = findViewById(R.id.btnPallet);
 
         mSurfaceHolder = surfaceViewDelivery.getHolder();
 
@@ -190,6 +193,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         btnDeliveryNo.setOnClickListener(this::onClickBtnDeliveryNo);
         btnUpdate.setOnClickListener(this::onClickBtnUpdate);
         btnChangeUser.setOnClickListener(this::onClickBtnChangeUser);
+        btnPalet.setOnClickListener(this::onClickBtnPalet);
 
 //        btnStart.setBackgroundColor(Color.RED);
 //        btnUndo.setBackgroundColor(Color.RED);
@@ -294,9 +298,10 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         }
     }
 
-    private void finishDelivery(String deliveryNo, List<DeliveryItem> listItem) throws Exception {
+    private void finishDelivery(String deliveryNo, List<DeliveryItem> listItem, List<PalletsInfo> palletsInfoList) throws Exception {
         if (response.get_status() == 1) {
             requestHandler.setDeliveryStatus(deliveryNo, 2, this, listItem);
+            requestHandler.setDeliveryPalletQuantity(deliveryNo, 2, this, palletsInfoList);
         } else {
             showErrorDialog(getString(R.string.error_finish));
         }
@@ -418,10 +423,19 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         popUpClass.showPopupWindow();
     }
 
+    private void openPopUpWindowPallet(View v) {
+        popUpClassPallet = new MyPopUpPalet(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this);
+        popUpClassPallet.showPopupWindow();
+    }
+
     public void closePopupWindow(String emirNo) {
         popUpClass.dismissPopupWindow();
         strCountDeliveryNo = emirNo;
         fillList(null);
+    }
+
+    public void closePopupPallet() {
+        popUpClassPallet.dismissPopupWindow();
     }
 
     private void showToastMessage(String message, int duration, int gravity) {
@@ -611,6 +625,11 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         }
     }
 
+    public void onClickBtnPalet(View v) {
+        openPopUpWindowPallet(v);
+        hideProgressDialog();
+    }
+
     public void onClickBtnStart(View v) {
         try {
             if (response == null || response.get_deliveryNo().isEmpty()) {
@@ -695,7 +714,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
                         try {
-                            finishDelivery(strCountDeliveryNo, mAdapterRVDeliveryItem.listDelivery);
+                            finishDelivery(strCountDeliveryNo, mAdapterRVDeliveryItem.listDelivery, response.get_palletsInfoList());
                             response.set_status(2);
                             selectedIndex = -1;
                         } catch (Exception e) {

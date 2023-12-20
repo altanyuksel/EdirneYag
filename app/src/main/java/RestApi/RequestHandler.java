@@ -7,6 +7,7 @@ import Models.Delivery.Delivery;
 import Models.Delivery.DeliveryItem;
 import Models.Delivery.Paging;
 import Models.Delivery.Palet;
+import Models.Delivery.PalletsInfo;
 import Models.Delivery.ResponseDelivery;
 import Models.Delivery.User;
 import ServiceSetting.ServiceDefinitions;
@@ -128,6 +129,42 @@ public class RequestHandler {
             deliveryType = 600;
         }
         Call<String> call = ManagerAll.getInstance().setDeliveryStatus(deliveryType, orderNo, status, items);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                String res = "";
+                if (!response.isSuccessful()) {
+                    try {
+                        res =  response.errorBody().string();
+                        Clear("", res);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    res = response.body();
+                    Clear(res, "");
+                }
+            }
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                try {
+                    throw new Exception("İşlem başarısız. Hata: " + t.getMessage());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void setDeliveryPalletQuantity(String orderNo, int status, DeliveryActivity activity, List<PalletsInfo> items) throws Exception {
+        deliveryActivity = activity;
+        int deliveryType = -1;
+        if (ServiceDefinitions.loginUser.get_userType().equals("Fabrika")){
+            deliveryType = 500;
+        } else if(ServiceDefinitions.loginUser.get_userType().equals("Şube")){
+            deliveryType = 600;
+        }
+        Call<String> call = ManagerAll.getInstance().setDeliveryPalletQuantity(deliveryType, orderNo, status, items);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
