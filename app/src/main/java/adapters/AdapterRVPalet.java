@@ -1,6 +1,8 @@
 package adapters;
 
 import android.annotation.SuppressLint;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +16,9 @@ import com.link.edirneyag.R;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import Models.Delivery.PalletsInfo;
 
@@ -26,6 +30,7 @@ public class AdapterRVPalet extends RecyclerView.Adapter<AdapterRVPalet.ViewHold
     private AdapterRVPalet.ViewHolder holder;
     public ArrayList<Integer> listReadedBarcodeList;
     private DecimalFormat dform = new DecimalFormat("#,###.####");
+    private Map<Integer, String> editTextValues = new HashMap<>(); // Satır pozisyonlarına göre EditText değerlerini saklamak için bir harita kullanıyoruz.
     AlertDialog.Builder errDialog;
     //endregion
 
@@ -49,6 +54,42 @@ public class AdapterRVPalet extends RecyclerView.Adapter<AdapterRVPalet.ViewHold
     }
     @Override
     public void onBindViewHolder(AdapterRVPalet.ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
+        String editTextValue = editTextValues.get(position);
+        if (editTextValue != null) {
+            holder.editPalletQuantity.setText(editTextValue);
+            if (editTextValue.equalsIgnoreCase("")){
+                listPalletsInfo.get(position).setPalletQuantity(0);
+            }else{
+                listPalletsInfo.get(position).setPalletQuantity(Integer.parseInt(editTextValue));
+            }
+        } else {
+            holder.editPalletQuantity.setText("0"); // EditText'e herhangi bir değer atanmamışsa, boş bir metin ayarla
+        }
+        // EditText değeri değiştiğinde sakla
+        holder.editPalletQuantity.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // EditText'teki yeni değeri sakla
+                if (holder.getAdapterPosition() == position) {
+                    editTextValues.put(position, editable.toString());
+                    String editTextValue = editTextValues.get(position);
+                    if (editTextValue.equalsIgnoreCase("")){
+                        listPalletsInfo.get(position).setPalletQuantity(0);
+                    }else{
+                        listPalletsInfo.get(position).setPalletQuantity(Integer.parseInt(editTextValue));
+                    }
+                }
+            }
+        });
+
         holder.setData(listPalletsInfo.get(position));
     }
     private void initErrorDialog() {
