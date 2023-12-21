@@ -18,21 +18,23 @@ import android.widget.TextView;
 import com.android.volley.RequestQueue;
 
 import java.net.CookieManager;
+import java.util.List;
 
-import Models.Delivery.Delivery;
-import Models.Delivery.ResponseDelivery;
+import Models.Delivery.PalletsInfo;
 import RestApi.RequestHandler;
 import ServiceSetting.ServiceDefinitions;
 import adapters.AdapterRVPalet;
+import adapters.MyAdapter;
 
 class MyPopUpPalet {
     //region $MEMBERS
     private final String TAG = "DELIVERY_SELECT";
     private static ServiceDefinitions serviceDefinitions;
     private PopupWindow popupWindow;
-    private Delivery response;
+    private List<PalletsInfo> palletsInfoList;
     private ProgressDialog progressDialog;
     private AdapterRVPalet mAdapterRVPalet;
+    private MyAdapter myAdapter;
     private RecyclerView recViewDeliveryList;
     private View mainView;
     private LayoutInflater inflater;
@@ -47,11 +49,11 @@ class MyPopUpPalet {
     //endregion
 
     //region $METHODS
-    public MyPopUpPalet(RequestQueue mReqQueue, ServiceDefinitions serviceDefinitions, CookieManager cookieManage, final View mainView, DeliveryActivity mainAct, Delivery response) {
+    public MyPopUpPalet(RequestQueue mReqQueue, ServiceDefinitions serviceDefinitions, CookieManager cookieManage, final View mainView, DeliveryActivity mainAct, List<PalletsInfo> palletsInfoList) {
         this.serviceDefinitions = serviceDefinitions;
         this.mainView = mainView;
         this.mainAct = mainAct;
-        this.response = response;
+        this.palletsInfoList = palletsInfoList;
     }
     private void initErrorDialog() {
         errDialog = new AlertDialog.Builder(mainAct);
@@ -87,6 +89,8 @@ class MyPopUpPalet {
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                mainAct.mPalletsInfoList = mAdapterRVPalet.listPalletsInfo;
+                mainAct.mPalletsInfoList = myAdapter.getDataList();
                 popupWindow.dismiss();
             }
         });
@@ -138,8 +142,14 @@ class MyPopUpPalet {
         progressDialog.dismiss();
     }
     private void setDeliveryListView() {
-        mAdapterRVPalet = new AdapterRVPalet(mainView.getContext(), response, mainAct);
-        recViewDeliveryList.setAdapter(mAdapterRVPalet);
+//        mAdapterRVPalet = new AdapterRVPalet(palletsInfoList, mainAct);
+//        recViewDeliveryList.setAdapter(mAdapterRVPalet);
+//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mainView.getContext());
+//        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+//        recViewDeliveryList.setLayoutManager(linearLayoutManager);
+
+        myAdapter = new MyAdapter(palletsInfoList, mainAct);
+        recViewDeliveryList.setAdapter(myAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mainView.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recViewDeliveryList.setLayoutManager(linearLayoutManager);

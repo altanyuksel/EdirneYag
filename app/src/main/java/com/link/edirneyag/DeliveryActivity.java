@@ -63,6 +63,7 @@ import Models.Delivery.Delivery;
 import RestApi.RequestHandler;
 import ServiceSetting.ServiceDefinitions;
 import Utils.DecimalInputFilter;
+import adapters.AdapterRVPalet;
 
 public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder.Callback {
     //region $MEMBERS
@@ -102,6 +103,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private static final String KEY_DELIVERYNO = "KEY_DELIVERYNO";
     private Switch cameraSwitch;
     private boolean isCameraRunning = true;
+    public List<PalletsInfo> mPalletsInfoList;
     //endregion
 
     //region $ACTIVITY OVERRIDE METHODS
@@ -251,10 +253,12 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         requestHandler = new RequestHandler();
         selectedItemList = new ArrayList<>();
         selectedIndex = -1;
+        mPalletsInfoList = new ArrayList<PalletsInfo>();
         if (savedInstanceState != null) {
             // Eğer önceki bir durum kaydedilmişse, verileri geri yükle
             strCountDeliveryNo = savedInstanceState.getString(KEY_DELIVERYNO);
             response = savedInstanceState.getParcelable(KEY_DELIVERY);
+            mPalletsInfoList = response.get_palletsInfoList();
             setDeliveryListView();
             mAdapterRVDeliveryItem.listDelivery = savedInstanceState.getParcelableArrayList(KEY_DELIVERYITEMS_ADAPTER);
             selectedItemList = savedInstanceState.getIntegerArrayList(KEY_DELIVERYITEMS_SELECTED);
@@ -425,7 +429,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     private void openPopUpWindowPallet(View v) {
         if (response != null){
-            popUpClassPallet = new MyPopUpPalet(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this, response);
+            mPalletsInfoList = response.get_palletsInfoList();
+            popUpClassPallet = new MyPopUpPalet(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this, mPalletsInfoList);
             popUpClassPallet.showPopupWindow();
         }
     }
@@ -434,10 +439,6 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         popUpClass.dismissPopupWindow();
         strCountDeliveryNo = emirNo;
         fillList(null);
-    }
-
-    public void closePopupPallet() {
-        popUpClassPallet.dismissPopupWindow();
     }
 
     private void showToastMessage(String message, int duration, int gravity) {
@@ -458,6 +459,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         try {
             if (res == null) {
                 response = requestHandler.getDelivery(strCountDeliveryNo);
+                mPalletsInfoList = response.get_palletsInfoList();
                 selectedItemList = new ArrayList<>();
                 selectedIndex = -1;
                 setDeliveryListView();
@@ -538,6 +540,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         selectedItemList.clear();
         mAdapterRVDeliveryItem.listReadedBarcodeList.clear();
         response = new Delivery();
+        mPalletsInfoList = response.get_palletsInfoList();
         selectedIndex = -1;
 
         int size = mAdapterRVDeliveryItem.listDelivery.size();
@@ -716,7 +719,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
                         try {
-                            finishDelivery(strCountDeliveryNo, mAdapterRVDeliveryItem.listDelivery, response.get_palletsInfoList());
+                            finishDelivery(strCountDeliveryNo, mAdapterRVDeliveryItem.listDelivery, mPalletsInfoList);
                             response.set_status(2);
                             selectedIndex = -1;
                         } catch (Exception e) {

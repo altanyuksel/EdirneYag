@@ -1,36 +1,40 @@
 package adapters;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.link.edirneyag.DeliveryActivity;
 import com.link.edirneyag.R;
 
-import Models.Delivery.Delivery;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 import Models.Delivery.PalletsInfo;
 
 public class AdapterRVPalet extends RecyclerView.Adapter<AdapterRVPalet.ViewHolder> {
     //region $MEMBERS
-    private Delivery delivery;
+    public List<PalletsInfo> listPalletsInfo;
     private LayoutInflater inflater;
-    private Context mContext;
     private DeliveryActivity activity;
+    private AdapterRVPalet.ViewHolder holder;
+    public ArrayList<Integer> listReadedBarcodeList;
+    private DecimalFormat dform = new DecimalFormat("#,###.####");
+    AlertDialog.Builder errDialog;
     //endregion
 
     //region $METHODS
-    public AdapterRVPalet(Context context, Delivery delivery, DeliveryActivity activity) {
-        inflater = LayoutInflater.from(context);
-        this.delivery = delivery;
-        this.mContext = context;
+    public AdapterRVPalet(List<PalletsInfo> listCountOrder, DeliveryActivity activity) {
+        this.listPalletsInfo = listCountOrder;
         this.activity = activity;
+        listReadedBarcodeList = new ArrayList<>();
+        initErrorDialog();
     }
     //endregion
 
@@ -38,13 +42,17 @@ public class AdapterRVPalet extends RecyclerView.Adapter<AdapterRVPalet.ViewHold
     @NonNull
     @Override
     public AdapterRVPalet.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.recycler_view_list_palet, parent, false);
-        AdapterRVPalet.ViewHolder holder = new AdapterRVPalet.ViewHolder(view);
+        holder = new AdapterRVPalet.ViewHolder(view);
         return holder;
     }
     @Override
     public void onBindViewHolder(AdapterRVPalet.ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
-        holder.setData(delivery.get_palletsInfoList().get(position));
+        holder.setData(listPalletsInfo.get(position));
+    }
+    private void initErrorDialog() {
+        errDialog = new AlertDialog.Builder(activity);
     }
     @Override
     public long getItemId(int position) {
@@ -52,7 +60,7 @@ public class AdapterRVPalet extends RecyclerView.Adapter<AdapterRVPalet.ViewHold
     }
     @Override
     public int getItemCount() {
-        return delivery.get_palletsInfoList().size();
+        return listPalletsInfo.size();
     }
     //endregion
 
@@ -72,11 +80,12 @@ public class AdapterRVPalet extends RecyclerView.Adapter<AdapterRVPalet.ViewHold
             editPalletQuantity = itemView.findViewById(R.id.editPalletQuantity);
         }
 
-        public void setData(PalletsInfo item) {
-            txtCustomerCode.setText(item.getCustomer().get_customerCode());
-            txtCustomerTitle.setText(item.getCustomer().get_customerTitle());
+        public void setData(PalletsInfo selectedModelExample) {
+            txtCustomerCode.setText(selectedModelExample.getCustomer().get_customerCode());
+            txtCustomerTitle.setText(selectedModelExample.getCustomer().get_customerTitle());
             editPalletQuantity.setText("0");
         }
     }
     //endregion
 }
+
