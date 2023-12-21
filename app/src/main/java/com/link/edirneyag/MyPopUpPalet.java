@@ -24,7 +24,6 @@ import Models.Delivery.PalletsInfo;
 import RestApi.RequestHandler;
 import ServiceSetting.ServiceDefinitions;
 import adapters.AdapterRVPalet;
-import adapters.MyAdapter;
 
 class MyPopUpPalet {
     //region $MEMBERS
@@ -34,7 +33,6 @@ class MyPopUpPalet {
     private List<PalletsInfo> palletsInfoList;
     private ProgressDialog progressDialog;
     private AdapterRVPalet mAdapterRVPalet;
-    private MyAdapter myAdapter;
     private RecyclerView recViewDeliveryList;
     private View mainView;
     private LayoutInflater inflater;
@@ -89,8 +87,7 @@ class MyPopUpPalet {
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                mainAct.mPalletsInfoList = mAdapterRVPalet.listPalletsInfo;
-                mainAct.mPalletsInfoList = myAdapter.getDataList();
+                mainAct.mPalletsInfoList = mAdapterRVPalet.listPalletsInfo;
                 popupWindow.dismiss();
             }
         });
@@ -142,14 +139,8 @@ class MyPopUpPalet {
         progressDialog.dismiss();
     }
     private void setDeliveryListView() {
-//        mAdapterRVPalet = new AdapterRVPalet(palletsInfoList, mainAct);
-//        recViewDeliveryList.setAdapter(mAdapterRVPalet);
-//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mainView.getContext());
-//        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-//        recViewDeliveryList.setLayoutManager(linearLayoutManager);
-
-        myAdapter = new MyAdapter(palletsInfoList, mainAct);
-        recViewDeliveryList.setAdapter(myAdapter);
+        mAdapterRVPalet = new AdapterRVPalet(palletsInfoList, mainAct);
+        recViewDeliveryList.setAdapter(mAdapterRVPalet);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mainView.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recViewDeliveryList.setLayoutManager(linearLayoutManager);
