@@ -71,7 +71,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private Context mContext;
     private ProgressDialog progressDialog;
     //    private Button btnAdd, btnRemove, btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser;
-    private Button btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser, btnPalet;
+    private Button btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser, btnPalet, btnClear;
     private EditText editNumber;
 
     AlertDialog.Builder errDialog;
@@ -180,6 +180,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         txtPaletMiktar = findViewById(R.id.txtPaletMiktar);
         editNumber = findViewById(R.id.editSayim);
         btnPalet = findViewById(R.id.btnPallet);
+        btnClear = findViewById(R.id.btnClear);
 
         mSurfaceHolder = surfaceViewDelivery.getHolder();
 
@@ -195,7 +196,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         btnUpdate.setOnClickListener(this::onClickBtnUpdate);
         btnChangeUser.setOnClickListener(this::onClickBtnChangeUser);
         btnPalet.setOnClickListener(this::onClickBtnPalet);
-
+        btnClear.setOnClickListener(this::onClickBtnClear);
 //        btnStart.setBackgroundColor(Color.RED);
 //        btnUndo.setBackgroundColor(Color.RED);
 //        btnFinish.setBackgroundColor(Color.RED);
@@ -349,11 +350,14 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                                 canReadBarcode = true;
                                 if (response != null && response.get_status() == 1) {
                                     barcodeString = barcodes.valueAt(0).displayValue;
+                                    if (barcodeString.length() >= 6) {
+                                        barcodeString = barcodeString.substring(barcodeString.length() - 6);
+                                    }
                                     txtBarcodeValue.setText(barcodeString);
                                     Log.d(TAG, "initializeDetectorsAndSources: barcode was scanned. scanned string : " + barcodeString);
                                     setPaletRows(barcodeString);
                                     showToastMessage(barcodeString, Toast.LENGTH_LONG, Gravity.TOP);
-                                } else if (response == null) {
+                                } else if (response == null || response.get_deliveryNo() == null) {
                                     barcodeString = barcodes.valueAt(0).displayValue;
                                     strCountDeliveryNo = barcodeString;
                                     response = requestHandler.getDelivery(strCountDeliveryNo);
@@ -561,7 +565,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     private void clearPage() {
-        btnDeliveryNo.setText(getString(R.string.delivery_no));
+        ClearPalletRow();
+        btnDeliveryNo.setText(getString(R.string.delivery));
 //        txtVehicle.setText("");
         String htmlContent = "<html><body><h1></h1></body></html>";
         webViewVehicle.loadData(htmlContent, "text/html", "UTF-8");
@@ -579,6 +584,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         btnStart.setEnabled(false);
         btnUndo.setEnabled(false);
         btnFinish.setEnabled(false);
+        canReadBarcode = true;
     }
 
 //    private String controlConditions() {
@@ -676,6 +682,10 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     public void onClickBtnPalet(View v) {
         openPopUpWindowPallet(v);
         hideProgressDialog();
+    }
+
+    public void onClickBtnClear(View v) {
+        clearPage();
     }
 
     public void onClickBtnStart(View v) {

@@ -209,22 +209,31 @@
                 android:layout_weight="50"
                 android:text="No Barcode Detected"
                 android:textColor="@android:color/black"
-                android:textSize="30sp" />
-            <Button
-                android:id="@+id/btnPallet"
-                android:layout_width="wrap_content"
+                android:textSize="25sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="20"
-                android:layout_margin="10dp"
-                android:text="@string/pallet"></Button>
+                android:layout_weight="50"
+                android:orientation="vertical">
+                <Button
+                    android:id="@+id/btnPallet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pallet"
+                    android:layout_gravity="center_horizontal">
+                </Button>
+
+            </LinearLayout>
+
             <Switch
                 android:id="@+id/swCamera"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="10"
-                android:text="On/Off"
+                android:text="Kamera On/Off"
                 android:layout_gravity="bottom"
                 android:layout_marginBottom="20dp"
+                android:layout_marginLeft="5dp"
                 android:checked="true"/>
         </LinearLayout>
         <LinearLayout
@@ -246,6 +255,15 @@
                 android:layout_gravity="center"
                 android:textColor="@android:color/black"
                 android:textSize="20sp" />
+            <Button
+                android:id="@+id/btnClear"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="50"
+                android:text="@string/clear"
+                android:textSize="11dp"
+                android:layout_marginTop="1dp">
+            </Button>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
