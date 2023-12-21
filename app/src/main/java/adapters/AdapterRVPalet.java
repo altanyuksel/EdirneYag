@@ -124,7 +124,7 @@ public class AdapterRVPalet extends RecyclerView.Adapter<AdapterRVPalet.ViewHold
         public void setData(PalletsInfo selectedModelExample) {
             txtCustomerCode.setText(selectedModelExample.getCustomer().get_customerCode());
             txtCustomerTitle.setText(selectedModelExample.getCustomer().get_customerTitle());
-            editPalletQuantity.setText("0");
+            editPalletQuantity.setText(String.valueOf(selectedModelExample.getPalletQuantity()));
         }
     }
     //endregion

@@ -117,10 +117,11 @@ public class RequestHandler {
             res = exception.getMessage();
             return  null;
         }
+        if (responseDelivery == null || responseDelivery.getListItem().size() == 0) return null;
         return responseDelivery.getListItem().get(0);
     }
 
-    public void setDeliveryStatus(String orderNo, int status, DeliveryActivity activity, List<DeliveryItem> items) throws Exception {
+    public void setDeliveryStatus(String orderNo, int status, DeliveryActivity activity, List<DeliveryItem> items, List<PalletsInfo> itemsPallets) throws Exception {
         deliveryActivity = activity;
         int deliveryType = -1;
         if (ServiceDefinitions.loginUser.get_userType().equals("Fabrika")){
@@ -142,6 +143,11 @@ public class RequestHandler {
                     }
                 } else {
                     res = response.body();
+                    try {
+                        setDeliveryPalletQuantity(orderNo, status, activity, itemsPallets);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                     Clear(res, "");
                 }
             }
@@ -176,9 +182,6 @@ public class RequestHandler {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                } else {
-                    res = response.body();
-                    Clear(res, "");
                 }
             }
             @Override

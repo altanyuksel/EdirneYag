@@ -21,13 +21,6 @@
                 android:padding="4dp"
                 android:text="@string/delivery"></Button>
             <Button
-                android:id="@+id/btnPallet"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="30"
-                android:padding="4dp"
-                android:text="@string/pallet"></Button>
-            <Button
                 android:id="@+id/btnStart"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -177,7 +170,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="25"
-                    android:text="Yükleme Miktarı">
+                    android:text="@string/delivery_quantity">
                 </TextView>
             </LinearLayout>
             <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -213,10 +206,17 @@
                 android:id="@+id/txtBarcodeValue"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:layout_weight="90"
+                android:layout_weight="50"
                 android:text="No Barcode Detected"
                 android:textColor="@android:color/black"
                 android:textSize="30sp" />
+            <Button
+                android:id="@+id/btnPallet"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="20"
+                android:layout_margin="10dp"
+                android:text="@string/pallet"></Button>
             <Switch
                 android:id="@+id/swCamera"
                 android:layout_width="wrap_content"

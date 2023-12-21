@@ -63,7 +63,6 @@ import Models.Delivery.Delivery;
 import RestApi.RequestHandler;
 import ServiceSetting.ServiceDefinitions;
 import Utils.DecimalInputFilter;
-import adapters.AdapterRVPalet;
 
 public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder.Callback {
     //region $MEMBERS
@@ -286,16 +285,24 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     private void startDelivery(String deliveryNo) throws Exception {
         if (deliveryNo != null && deliveryNo != "") {
-            requestHandler.setDeliveryStatus(deliveryNo, 1, this, response.get_deliveryItem());
+            requestHandler.setDeliveryStatus(deliveryNo, 1, this, response.get_deliveryItem(), null);
             response.set_status(1);
             selectedItemList = new ArrayList<>();
             showToastMessage(getString(R.string.start_delivery), Toast.LENGTH_LONG, Gravity.TOP);
+
+            selectedIndex = -1;
+            btnUndo.setBackgroundColor(Color.GREEN);
+            btnFinish.setBackgroundColor(Color.GREEN);
+
+            btnStart.setEnabled(false);
+            btnUndo.setEnabled(true);
+            btnFinish.setEnabled(true);
         }
     }
 
     private void undoDelivery(String deliveryNo) throws Exception {
         if (deliveryNo != null && deliveryNo != "") {
-            requestHandler.setDeliveryStatus(deliveryNo, 0, this, response.get_deliveryItem());
+            requestHandler.setDeliveryStatus(deliveryNo, 0, this, response.get_deliveryItem(), null);
             response.set_status(1);
             selectedItemList = new ArrayList<>();
             showToastMessage(getString(R.string.undo_delivery), Toast.LENGTH_LONG, Gravity.TOP);
@@ -304,8 +311,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     private void finishDelivery(String deliveryNo, List<DeliveryItem> listItem, List<PalletsInfo> palletsInfoList) throws Exception {
         if (response.get_status() == 1) {
-            requestHandler.setDeliveryStatus(deliveryNo, 2, this, listItem);
-            requestHandler.setDeliveryPalletQuantity(deliveryNo, 2, this, palletsInfoList);
+            requestHandler.setDeliveryStatus(deliveryNo, 2, this, listItem, palletsInfoList);
+//            requestHandler.setDeliveryPalletQuantity(deliveryNo, 2, this, palletsInfoList);
         } else {
             showErrorDialog(getString(R.string.error_finish));
         }
@@ -346,6 +353,27 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                                     Log.d(TAG, "initializeDetectorsAndSources: barcode was scanned. scanned string : " + barcodeString);
                                     setPaletRows(barcodeString);
                                     showToastMessage(barcodeString, Toast.LENGTH_LONG, Gravity.TOP);
+                                } else if (response == null) {
+                                    barcodeString = barcodes.valueAt(0).displayValue;
+                                    strCountDeliveryNo = barcodeString;
+                                    response = requestHandler.getDelivery(strCountDeliveryNo);
+                                    if (response != null && (response.get_status() != 2)){
+                                        mPalletsInfoList = response.get_palletsInfoList();
+                                        setDeliveryListView();
+                                        mAdapterRVDeliveryItem.listDelivery = response.get_deliveryItem();
+                                        selectedItemList = new ArrayList<>();
+                                        mAdapterRVDeliveryItem.listReadedBarcodeList = selectedItemList;
+                                        fillList(response);
+                                        try {
+                                            if (response.get_status() == 0){
+                                                startDelivery(strCountDeliveryNo);
+                                            }
+                                        } catch (Exception e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }else{
+                                        strCountDeliveryNo = "";
+                                    }
                                 }
                             }
                         }, 2000);
@@ -390,6 +418,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     public void setPaletRows(String readedBarcode) {
         readedPalet = requestHandler.getPalet(readedBarcode);
+        if(readedPalet == null) return;
         selectedIndex = -1;
         int index = -1;
         boolean isExist = false;
@@ -552,17 +581,31 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         btnFinish.setEnabled(false);
     }
 
+//    private String controlConditions() {
+//        String errMessage = "";
+//        double toplamSayimMiktar = 0;
+//        for (int i = 0; i <= response.get_deliveryItem().size() - 1; i++) {
+//            toplamSayimMiktar += response.get_deliveryItem().get(i).getMiktar2();
+//        }
+////        if (selectedItemList.size() != response.get_deliveryItem().size()){
+////            errMessage = "Tüm satırlar okutulmalıdır.";
+////        }
+//        if (toplamSayimMiktar <= 0) {
+//            errMessage = "En az bir satır okutulmalıdır.";
+//        }
+//        return errMessage;
+//    }
     private String controlConditions() {
         String errMessage = "";
-        double toplamSayimMiktar = 0;
-        for (int i = 0; i <= response.get_deliveryItem().size() - 1; i++) {
-            toplamSayimMiktar += response.get_deliveryItem().get(i).getMiktar2();
+        boolean isValid = true;
+        for (DeliveryItem item: mAdapterRVDeliveryItem.listDelivery) {
+            if (item.getMiktar() != item.getMiktar2()){
+                isValid = false;
+                break;
+            }
         }
-//        if (selectedItemList.size() != response.get_deliveryItem().size()){
-//            errMessage = "Tüm satırlar okutulmalıdır.";
-//        }
-        if (toplamSayimMiktar <= 0) {
-            errMessage = "En az bir satır okutulmalıdır.";
+        if (!isValid){
+            errMessage = "Tüm satırların yükleme miktarları doldurulmalıdır.";
         }
         return errMessage;
     }
@@ -648,13 +691,6 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                     public void onClick(DialogInterface dialog, int i) {
                         try {
                             startDelivery(strCountDeliveryNo);
-                            selectedIndex = -1;
-                            btnUndo.setBackgroundColor(Color.GREEN);
-                            btnFinish.setBackgroundColor(Color.GREEN);
-
-                            btnStart.setEnabled(false);
-                            btnUndo.setEnabled(true);
-                            btnFinish.setEnabled(true);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -756,6 +792,11 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                     }
                     for (DeliveryItem item: mAdapterRVDeliveryItem.listDelivery) {
                         if (item.getMateryalKodu().equals(readedPalet.getMateryalKodu())){
+                            if (dNumber > item.getMiktar()){
+                                showErrorDialog(getString(R.string.error_counting));
+                                editNumber.setText("0");
+                                return;
+                            }
                             Palet pal = readedPalet;
                             if(item.getPalets() != null){
                                 int index = -1;
