@@ -224,6 +224,7 @@
                 android:layout_weight="10"
                 android:text="On/Off"
                 android:layout_gravity="bottom"
+                android:layout_marginBottom="20dp"
                 android:checked="true"/>
         </LinearLayout>
         <LinearLayout
