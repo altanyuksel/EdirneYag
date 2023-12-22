@@ -3,6 +3,7 @@ package RestApi;
 import Models.Delivery.Palet;
 import Models.Delivery.ResponseDelivery;
 import Models.Delivery.User;
+import DeliveryGroup.ResponseGroup;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -36,4 +37,7 @@ public interface RestApi {
 
     @POST("api/delivery/PalletQuantityDelivery")
     Call<String> setDeliveryPalletQuantity(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo, @Body RequestBody requestBody);
+
+    @GET("api/deliverygroupproduct")
+    Call<ResponseGroup> getDeliveryGroupProduct(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo, @Query("page") int page, @Query("pageSize") int pageSize);
 }

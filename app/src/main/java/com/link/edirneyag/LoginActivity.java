@@ -61,8 +61,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private ServiceDefinitions GetServiceDefination(String userName, String password, String userType) throws XmlPullParserException, IOException {
-//        return ServiceDefinitions.getYNSHandlerInstance(getResources(), R.xml.test_config_link, userName, password, userType);
-        return ServiceDefinitions.getYNSHandlerInstance(getResources(), R.xml.config_link, userName, password, userType);
+        return ServiceDefinitions.getYNSHandlerInstance(getResources(), R.xml.test_config_link, userName, password, userType);
+//        return ServiceDefinitions.getYNSHandlerInstance(getResources(), R.xml.config_link, userName, password, userType);
     }
 
     private void checkService() {

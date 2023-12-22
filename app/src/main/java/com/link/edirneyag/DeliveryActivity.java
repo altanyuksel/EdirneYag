@@ -359,6 +359,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                                     showToastMessage(barcodeString, Toast.LENGTH_LONG, Gravity.TOP);
                                 } else if (response == null || response.get_deliveryNo() == null) {
                                     barcodeString = barcodes.valueAt(0).displayValue;
+                                    if(barcodeString.length() != 8) return;
                                     strCountDeliveryNo = barcodeString;
                                     response = requestHandler.getDelivery(strCountDeliveryNo);
                                     if (response != null && (response.get_status() != 2)){

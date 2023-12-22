@@ -11,6 +11,7 @@ import Models.Delivery.PalletsInfo;
 import Models.Delivery.ResponseDelivery;
 import Models.Delivery.User;
 import ServiceSetting.ServiceDefinitions;
+import DeliveryGroup.ResponseGroup;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -103,6 +104,7 @@ public class RequestHandler {
 
     public Delivery getDelivery(String deliveryNo) {
         ResponseDelivery responseDelivery = null;
+        ResponseGroup responseGroup = null;
         int deliveryType = -1;
         if (ServiceDefinitions.loginUser.get_userType().equals("Fabrika")){
             deliveryType = 500;
@@ -110,9 +112,11 @@ public class RequestHandler {
             deliveryType = 600;
         }
         Call<ResponseDelivery> call = ManagerAll.getInstance().getDeliveryList(deliveryType,deliveryNo,0,10);
+        Call<ResponseGroup> call2 = ManagerAll.getInstance().getDeliveryListGroup(deliveryType,deliveryNo,0,10);
         String res = "";
         try {
             responseDelivery = call.execute().body();
+            responseGroup = call2.execute().body();
         } catch (Exception exception) {
             res = exception.getMessage();
             return  null;
