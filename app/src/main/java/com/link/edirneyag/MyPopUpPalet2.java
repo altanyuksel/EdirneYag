@@ -142,7 +142,7 @@ public class MyPopUpPalet2 {
         progressDialog.dismiss();
     }
     private void setDeliveryListView() {
-        mAdapterRVPalet = new AdapterRVPalet2(palletsInfoList, mainAct);
+        mAdapterRVPalet = new AdapterRVPalet2(mainView.getContext(), palletsInfoList, mainAct);
         recViewDeliveryList.setAdapter(mAdapterRVPalet);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mainView.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);

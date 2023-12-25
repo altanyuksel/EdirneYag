@@ -1,6 +1,9 @@
 package adapters;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.link.edirneyag.DeliveryActivity;
+import com.link.edirneyag.MainActivity;
 import com.link.edirneyag.R;
 
 import java.text.DecimalFormat;
@@ -27,10 +31,12 @@ public class AdapterRVPalet2 extends RecyclerView.Adapter<AdapterRVPalet2.ViewHo
     private AdapterRVPalet2.ViewHolder holder;
     private DecimalFormat dform = new DecimalFormat("#,###.####");
     AlertDialog.Builder errDialog;
+    private Context mContext;
     //endregion
 
     //region $METHODS
-    public AdapterRVPalet2(List<Palet> listCountOrder, DeliveryActivity activity) {
+    public AdapterRVPalet2(Context context, List<Palet> listCountOrder, DeliveryActivity activity) {
+        this.mContext = context;
         this.palets = listCountOrder;
         this.activity = activity;
         initErrorDialog();
@@ -53,9 +59,30 @@ public class AdapterRVPalet2 extends RecyclerView.Adapter<AdapterRVPalet2.ViewHo
         holder.btnPaletSil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Tıklama durumunda satırı sil
-                palets.remove(position);
-                notifyDataSetChanged(); // Değişikliği adapter'a bildirerek liste yeniden yüklensin
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+//                builder.setMessage(palets.get(position).getSeriNo() + " " + activity.getString(R.string.delete_selected_pallet));
+                builder.setMessage(mContext.getResources().getString(R.string.delete_selected_pallet));
+                builder.setCancelable(false);
+                builder.setPositiveButton(mContext.getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        try {
+                            // Tıklama durumunda satırı sil
+                            palets.remove(position);
+                            notifyDataSetChanged(); // Değişikliği adapter'a bildirerek liste yeniden yüklensin
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                builder.setNegativeButton(mContext.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
             }
         });
     }

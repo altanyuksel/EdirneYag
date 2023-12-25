@@ -845,7 +845,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                             Palet pal = readedPalet;
                             if(item.getPalets() != null){
                                 int index = -1;
-                                for(int i = 0; i < item.getPalets().size()-1; i++){
+                                for(int i = 0; i <= item.getPalets().size()-1; i++){
                                     if (item.getPalets().get(i).getSeriNo().equals(pal.getSeriNo())){
                                         index = i;
                                         break;
