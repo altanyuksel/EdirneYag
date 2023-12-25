@@ -263,6 +263,15 @@
                 android:textSize="11dp"
                 android:layout_marginTop="1dp">
             </Button>
+            <Button
+                android:id="@+id/btnPallet2"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="50"
+                android:text="@string/pallet_delete"
+                android:textSize="11dp"
+                android:layout_marginTop="1dp">
+            </Button>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

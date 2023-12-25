@@ -4,6 +4,7 @@ import android.os.StrictMode;
 import com.link.edirneyag.DeliveryActivity;
 import java.util.List;
 import Models.Delivery.Delivery;
+import DeliveryGroup.DeliveryGroup;
 import Models.Delivery.DeliveryItem;
 import Models.Delivery.Paging;
 import Models.Delivery.Palet;
@@ -15,6 +16,7 @@ import DeliveryGroup.ResponseGroup;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import DeliveryGroup.DeliveryGroupItem;
 
 public class RequestHandler {
     public RequestHandler() {
@@ -102,8 +104,7 @@ public class RequestHandler {
         return responseDelivery;
     }
 
-    public Delivery getDelivery(String deliveryNo) {
-        ResponseDelivery responseDelivery = null;
+    public DeliveryGroup getDelivery(String deliveryNo) {
         ResponseGroup responseGroup = null;
         int deliveryType = -1;
         if (ServiceDefinitions.loginUser.get_userType().equals("Fabrika")){
@@ -111,21 +112,19 @@ public class RequestHandler {
         } else if(ServiceDefinitions.loginUser.get_userType().equals("Şube")){
             deliveryType = 600;
         }
-        Call<ResponseDelivery> call = ManagerAll.getInstance().getDeliveryList(deliveryType,deliveryNo,0,10);
-        Call<ResponseGroup> call2 = ManagerAll.getInstance().getDeliveryListGroup(deliveryType,deliveryNo,0,10);
+        Call<ResponseGroup> call = ManagerAll.getInstance().getDeliveryListGroup(deliveryType,deliveryNo,0,10);
         String res = "";
         try {
-            responseDelivery = call.execute().body();
-            responseGroup = call2.execute().body();
+            responseGroup = call.execute().body();
         } catch (Exception exception) {
             res = exception.getMessage();
             return  null;
         }
-        if (responseDelivery == null || responseDelivery.getListItem().size() == 0) return null;
-        return responseDelivery.getListItem().get(0);
+        if (responseGroup == null || responseGroup.getListItem().size() == 0) return null;
+        return responseGroup.getListItem().get(0);
     }
 
-    public void setDeliveryStatus(String orderNo, int status, DeliveryActivity activity, List<DeliveryItem> items, List<PalletsInfo> itemsPallets) throws Exception {
+    public void setDeliveryStatus(String orderNo, int status, DeliveryActivity activity, List<DeliveryGroupItem> items, List<PalletsInfo> itemsPallets) throws Exception {
         deliveryActivity = activity;
         int deliveryType = -1;
         if (ServiceDefinitions.loginUser.get_userType().equals("Fabrika")){

@@ -55,11 +55,12 @@ import java.net.CookieManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import DeliveryGroup.DeliveryGroup;
 import Models.Delivery.DeliveryItem;
 import Models.Delivery.Palet;
 import Models.Delivery.PalletsInfo;
 import adapters.AdapterRVDeliveryItem;
-import Models.Delivery.Delivery;
+import DeliveryGroup.DeliveryGroupItem;
 import RestApi.RequestHandler;
 import ServiceSetting.ServiceDefinitions;
 import Utils.DecimalInputFilter;
@@ -71,13 +72,14 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private Context mContext;
     private ProgressDialog progressDialog;
     //    private Button btnAdd, btnRemove, btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser;
-    private Button btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser, btnPalet, btnClear;
+    private Button btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser, btnPalet, btnClear, btnPalet2;
     private EditText editNumber;
 
     AlertDialog.Builder errDialog;
     private CookieManager cookieManage; //Yeni nesil servisi cookie kullandığından cookie set ediyoruz. Bunu yapmazsak çalışmıyor.
     private MyPopUpWindow popUpClass;
     private MyPopUpPalet popUpClassPallet;
+    private MyPopUpPalet2 popUpClassPallet2;
     public RequestHandler requestHandler;
 
     private SurfaceView surfaceViewDelivery;
@@ -93,7 +95,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private ArrayList<Integer> selectedItemList; //Okunan barkodların index'lerini tutuyor.
     private Integer selectedIndex; //Okunan barkodların index'lerini tutuyor.
     private AdapterRVDeliveryItem mAdapterRVDeliveryItem;
-    private Delivery response;
+    private DeliveryGroup response;
     private RecyclerView recViewDeliveryList;
     private boolean canReadBarcode = true;
     private static final String KEY_DELIVERY = "KEY_DELIVERY";
@@ -103,6 +105,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private Switch cameraSwitch;
     private boolean isCameraRunning = true;
     public List<PalletsInfo> mPalletsInfoList;
+
+    public List<Palet> mPallets;
     //endregion
 
     //region $ACTIVITY OVERRIDE METHODS
@@ -181,6 +185,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         editNumber = findViewById(R.id.editSayim);
         btnPalet = findViewById(R.id.btnPallet);
         btnClear = findViewById(R.id.btnClear);
+        btnPalet2 = findViewById(R.id.btnPallet2);
 
         mSurfaceHolder = surfaceViewDelivery.getHolder();
 
@@ -197,6 +202,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         btnChangeUser.setOnClickListener(this::onClickBtnChangeUser);
         btnPalet.setOnClickListener(this::onClickBtnPalet);
         btnClear.setOnClickListener(this::onClickBtnClear);
+        btnPalet2.setOnClickListener(this::onClickBtnPalet2);
 //        btnStart.setBackgroundColor(Color.RED);
 //        btnUndo.setBackgroundColor(Color.RED);
 //        btnFinish.setBackgroundColor(Color.RED);
@@ -310,7 +316,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         }
     }
 
-    private void finishDelivery(String deliveryNo, List<DeliveryItem> listItem, List<PalletsInfo> palletsInfoList) throws Exception {
+    private void finishDelivery(String deliveryNo, List<DeliveryGroupItem> listItem, List<PalletsInfo> palletsInfoList) throws Exception {
         if (response.get_status() == 1) {
             requestHandler.setDeliveryStatus(deliveryNo, 2, this, listItem, palletsInfoList);
 //            requestHandler.setDeliveryPalletQuantity(deliveryNo, 2, this, palletsInfoList);
@@ -427,7 +433,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         selectedIndex = -1;
         int index = -1;
         boolean isExist = false;
-        for (DeliveryItem item: mAdapterRVDeliveryItem.listDelivery) {
+        for (DeliveryGroupItem item: mAdapterRVDeliveryItem.listDelivery) {
             index++;
             if (item.getMateryalKodu().equals(readedPalet.getMateryalKodu())){
                 selectedIndex = index;
@@ -468,6 +474,25 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             popUpClassPallet.showPopupWindow();
         }
     }
+    private void openPopUpWindowPallet2(View v) {
+        if (response != null){
+            mPallets = GetAllPallets();
+            popUpClassPallet2 = new MyPopUpPalet2(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this, mPallets);
+            popUpClassPallet2.showPopupWindow();
+        }
+    }
+
+    private List<Palet> GetAllPallets() {
+        List<Palet> palets = new ArrayList<>();
+        for (DeliveryGroupItem item: response.get_deliveryItem()) {
+            if (item.getPalets() != null) {
+                for (Palet itemPalet: item.getPalets()) {
+                    palets.add(itemPalet);
+                }
+            }
+        }
+        return palets;
+    }
 
     public void closePopupWindow(String emirNo) {
         popUpClass.dismissPopupWindow();
@@ -489,7 +514,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         recViewDeliveryList.setLayoutManager(linearLayoutManager);
     }
 
-    private void fillList(Delivery res) {
+    private void fillList(DeliveryGroup res) {
         try {
             if (res == null) {
                 response = requestHandler.getDelivery(strCountDeliveryNo);
@@ -574,7 +599,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         strCountDeliveryNo = "";
         selectedItemList.clear();
         mAdapterRVDeliveryItem.listReadedBarcodeList.clear();
-        response = new Delivery();
+        response = new DeliveryGroup();
         mPalletsInfoList = response.get_palletsInfoList();
         selectedIndex = -1;
 
@@ -605,7 +630,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private String controlConditions() {
         String errMessage = "";
         boolean isValid = true;
-        for (DeliveryItem item: mAdapterRVDeliveryItem.listDelivery) {
+        for (DeliveryGroupItem item: mAdapterRVDeliveryItem.listDelivery) {
             if (item.getMiktar() != item.getMiktar2()){
                 isValid = false;
                 break;
@@ -682,6 +707,10 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     public void onClickBtnPalet(View v) {
         openPopUpWindowPallet(v);
+        hideProgressDialog();
+    }
+    public void onClickBtnPalet2(View v) {
+        openPopUpWindowPallet2(v);
         hideProgressDialog();
     }
 
@@ -801,9 +830,14 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                         editNumber.setText("0");
                         return;
                     }
-                    for (DeliveryItem item: mAdapterRVDeliveryItem.listDelivery) {
+                    for (DeliveryGroupItem item: mAdapterRVDeliveryItem.listDelivery) {
                         if (item.getMateryalKodu().equals(readedPalet.getMateryalKodu())){
                             if (dNumber > item.getMiktar()){
+                                showErrorDialog(getString(R.string.error_counting));
+                                editNumber.setText("0");
+                                return;
+                            }
+                            if (item.getMiktar() < item.getMiktar2() + dNumber){
                                 showErrorDialog(getString(R.string.error_counting));
                                 editNumber.setText("0");
                                 return;
@@ -935,4 +969,19 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         return htmlContent;
     }
     //endregion
+    public void ResetPalet(){
+        for (DeliveryGroupItem item: response.get_deliveryItem()) {
+            item.setMiktar2(0);
+            if(item.getPalets() != null){
+                item.getPalets().clear();
+            }
+            for (Palet itemPalet: mPallets) {
+                if (item.getMateryalKodu().equals(itemPalet.getMateryalKodu())){
+                    item.setMiktar2(item.getMiktar2() + itemPalet.getMiktar());
+                    item.addPalet(itemPalet);
+                }
+            }
+        }
+        setDeliveryListView();
+    }
 }

@@ -20,11 +20,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import DeliveryGroup.DeliveryGroupItem;
 import Models.Delivery.DeliveryItem;
 
 public class AdapterRVDeliveryItem extends RecyclerView.Adapter<AdapterRVDeliveryItem.ViewHolder> {
     //region $MEMBERS
-    public List<DeliveryItem> listDelivery;
+    public List<DeliveryGroupItem> listDelivery;
     private LayoutInflater inflater;
     private DeliveryActivity activity;
     private ViewHolder holder;
@@ -35,7 +36,7 @@ public class AdapterRVDeliveryItem extends RecyclerView.Adapter<AdapterRVDeliver
     //endregion
 
     //region $METHODS
-    public AdapterRVDeliveryItem(List<DeliveryItem> listCountOrder, DeliveryActivity activity) {
+    public AdapterRVDeliveryItem(List<DeliveryGroupItem> listCountOrder, DeliveryActivity activity) {
         this.listDelivery = listCountOrder;
         this.activity = activity;
         listReadedBarcodeList = new ArrayList<>();
@@ -55,7 +56,7 @@ public class AdapterRVDeliveryItem extends RecyclerView.Adapter<AdapterRVDeliver
     @SuppressLint("ResourceAsColor")
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
-        DeliveryItem selectedModelExample = listDelivery.get(position);
+        DeliveryGroupItem selectedModelExample = listDelivery.get(position);
         holder.setData(selectedModelExample, position);
         if (listReadedBarcodeList.contains(position)) {
 //            holder.txtMalkodu.setBackgroundColor(Color.YELLOW);
@@ -79,7 +80,7 @@ public class AdapterRVDeliveryItem extends RecyclerView.Adapter<AdapterRVDeliver
     }
 
     public void setSayimMiktar(int index, float sayimMiktar, String seriNo){
-        DeliveryItem selectedModelExample = listDelivery.get(index);
+        DeliveryGroupItem selectedModelExample = listDelivery.get(index);
         if (sayimMiktar <= selectedModelExample.getMiktar()){
             selectedModelExample.setMiktar2(sayimMiktar);
             notifyItemChanged(index);
@@ -125,7 +126,7 @@ public class AdapterRVDeliveryItem extends RecyclerView.Adapter<AdapterRVDeliver
             txtSayimMiktar = itemView.findViewById(R.id.txtSayimMiktar);
         }
 
-        public void setData(DeliveryItem selectedModelExample, int position) {
+        public void setData(DeliveryGroupItem selectedModelExample, int position) {
 //            txtMalkodu.setText(selectedModelExample.getMateryalKodu());
             txtMalAdi.setText(selectedModelExample.getMateryalAdi());
             txtMiktar.setText(dform.format(selectedModelExample.getMiktar()));

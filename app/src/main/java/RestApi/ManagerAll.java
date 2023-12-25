@@ -14,6 +14,7 @@ import Models.Delivery.ResponseDelivery;
 import Models.Delivery.User;
 import ServiceSetting.ServiceDefinitions;
 import DeliveryGroup.ResponseGroup;
+import DeliveryGroup.DeliveryGroupItem;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -73,7 +74,7 @@ public class ManagerAll extends BaseManager {
         return call;
     }
 
-    public Call<String> setDeliveryStatus(int type, String deliveryNo, int status, List<DeliveryItem> items) {
+    public Call<String> setDeliveryStatus(int type, String deliveryNo, int status, List<DeliveryGroupItem> items) {
         String basicAuth = "";
         try {
             byte[] encrpt= (ServiceDefinitions.loginUser.get_userName() +":"+ ServiceDefinitions.loginUser.get_password()).getBytes("UTF-8");

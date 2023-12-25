@@ -59,5 +59,8 @@
     <string name="customer_title">Müşteri Ünvan</string>
     <string name="piece">Adet</string>
     <string name="pallet">Palet Gir</string>
+    <string name="pallet_delete">Palet Sil</string>
+    <string name="pallet_no">Palet No:</string>
     <string name="clear">Sayfayı Temizle</string>
+    <string name="delete">Sil</string>
 </resources>
