@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/textview_border"
     android:orientation="horizontal">
     <TextView
         android:id="@+id/txtPaletNo"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:background="@drawable/textview_border"
         android:padding="1dp"
         android:layout_weight="40"
         android:textSize="15dp" />
@@ -16,7 +16,6 @@
         android:id="@+id/txtPaletMiktarPlt"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:background="@drawable/textview_border"
         android:layout_weight="40"
         android:padding="1dp"
         android:textSize="15dp" />
