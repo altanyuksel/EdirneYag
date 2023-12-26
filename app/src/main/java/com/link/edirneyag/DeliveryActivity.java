@@ -181,6 +181,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         recViewDeliveryList = findViewById(R.id.recViewDeliveryItemList);
         btnChangeUser = findViewById(R.id.btnChangeUser);
         cameraSwitch = findViewById(R.id.swCamera);
+        cameraSwitch.setVisibility(View.GONE);
         txtMalAdi = findViewById(R.id.txtMalAdi);
         txtPaletMiktar = findViewById(R.id.txtPaletMiktar);
         editNumber = findViewById(R.id.editSayim);
@@ -357,6 +358,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                                 canReadBarcode = true;
                                 if (response != null && response.get_status() == 1) {
                                     barcodeString = barcodes.valueAt(0).displayValue;
+//                                    if(barcodeString.length() < 9) return;
                                     if (barcodeString.length() > 8) {
                                         barcodeString = barcodeString.substring(barcodeString.length() - 6);
                                     }
