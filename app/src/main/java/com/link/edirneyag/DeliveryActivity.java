@@ -452,12 +452,12 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         }else if(index == -1){
             showToastMessage(getString(R.string.couldnot_find_pallet_delivery), Toast.LENGTH_LONG, Gravity.TOP);
         } else {
-            txtMalAdi.setText(readedPalet.getMateryalAdi());
-            txtPaletMiktar.setText(String.valueOf(readedPalet.getMiktar()));
-            editNumber.setText("0");
-            btnUpdate.setText(R.string.add);
-            if(isExist){
-                btnUpdate.setText(R.string.fix);
+            float remainingQuantity = mAdapterRVDeliveryItem.listDelivery.get(selectedIndex).getMiktar() - mAdapterRVDeliveryItem.listDelivery.get(selectedIndex).getMiktar2();
+            if (remainingQuantity >= readedPalet.getMiktar()){
+                editNumber.setText(String.valueOf(readedPalet.getMiktar()));
+                addRow();
+            } else {
+                addPaletRow(isExist);
             }
         }
     }
@@ -820,59 +820,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     public void onClickBtnUpdate(View v) {
-        try {
-            float dNumber = 0, quantity = 0, fixedQuantity = 0;
-            if (!String.valueOf(editNumber.getText()).equals("")) {
-                dNumber = Float.valueOf(String.valueOf(editNumber.getText()));
-                if (mAdapterRVDeliveryItem.listDelivery != null && readedPalet != null) {
-                    if(dNumber > readedPalet.getMiktar()){
-                        showErrorDialog(getString(R.string.error_counting));
-                        editNumber.setText("0");
-                        return;
-                    }
-                    for (DeliveryGroupItem item: mAdapterRVDeliveryItem.listDelivery) {
-                        if (item.getMateryalKodu().equals(readedPalet.getMateryalKodu())){
-                            if (dNumber > item.getMiktar()){
-                                showErrorDialog(getString(R.string.error_counting));
-                                editNumber.setText("0");
-                                return;
-                            }
-                            if (item.getMiktar() < item.getMiktar2() + dNumber){
-                                showErrorDialog(getString(R.string.error_counting));
-                                editNumber.setText("0");
-                                return;
-                            }
-                            Palet pal = readedPalet;
-                            if(item.getPalets() != null){
-                                int index = -1;
-                                for(int i = 0; i <= item.getPalets().size()-1; i++){
-                                    if (item.getPalets().get(i).getSeriNo().equals(pal.getSeriNo())){
-                                        index = i;
-                                        break;
-                                    }
-                                }
-                                if (index == -1){
-                                    pal.setMiktar(dNumber);
-                                    item.addPalet(pal);
-                                } else {
-                                    fixedQuantity = - item.getPalets().get(index).getMiktar();;
-                                    item.getPalets().get(index).setMiktar(dNumber);
-                                }
-                            } else {
-                                pal.setMiktar(dNumber);
-                                item.addPalet(pal);
-                            }
-                            quantity = mAdapterRVDeliveryItem.listDelivery.get(selectedIndex).getMiktar2();
-                            mAdapterRVDeliveryItem.setSayimMiktar(selectedIndex, quantity + dNumber + fixedQuantity, "");
-                            ClearPalletRow();
-                        }
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        addRow();
     }
 
     public void onClickBtnChangeUser(View v) {
@@ -983,5 +931,70 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             }
         }
         setDeliveryListView();
+    }
+
+    private void addRow(){
+        try {
+            float dNumber = 0, quantity = 0, fixedQuantity = 0;
+            if (!String.valueOf(editNumber.getText()).equals("")) {
+                dNumber = Float.valueOf(String.valueOf(editNumber.getText()));
+                if (mAdapterRVDeliveryItem.listDelivery != null && readedPalet != null) {
+                    if(dNumber > readedPalet.getMiktar()){
+                        showErrorDialog(getString(R.string.error_counting));
+                        editNumber.setText("0");
+                        return;
+                    }
+                    for (DeliveryGroupItem item: mAdapterRVDeliveryItem.listDelivery) {
+                        if (item.getMateryalKodu().equals(readedPalet.getMateryalKodu())){
+                            if (dNumber > item.getMiktar()){
+                                showErrorDialog(getString(R.string.error_counting));
+                                editNumber.setText("0");
+                                return;
+                            }
+                            if (item.getMiktar() < item.getMiktar2() + dNumber){
+                                showErrorDialog(getString(R.string.error_counting));
+                                editNumber.setText("0");
+                                return;
+                            }
+                            Palet pal = readedPalet;
+                            if(item.getPalets() != null){
+                                int index = -1;
+                                for(int i = 0; i <= item.getPalets().size()-1; i++){
+                                    if (item.getPalets().get(i).getSeriNo().equals(pal.getSeriNo())){
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                if (index == -1){
+                                    pal.setMiktar(dNumber);
+                                    item.addPalet(pal);
+                                } else {
+                                    fixedQuantity = - item.getPalets().get(index).getMiktar();;
+                                    item.getPalets().get(index).setMiktar(dNumber);
+                                }
+                            } else {
+                                pal.setMiktar(dNumber);
+                                item.addPalet(pal);
+                            }
+                            quantity = mAdapterRVDeliveryItem.listDelivery.get(selectedIndex).getMiktar2();
+                            mAdapterRVDeliveryItem.setSayimMiktar(selectedIndex, quantity + dNumber + fixedQuantity, "");
+                            ClearPalletRow();
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void addPaletRow(boolean isExist){
+        txtMalAdi.setText(readedPalet.getMateryalAdi());
+        txtPaletMiktar.setText(String.valueOf(readedPalet.getMiktar()));
+        editNumber.setText("0");
+        btnUpdate.setText(R.string.add);
+        if(isExist){
+            btnUpdate.setText(R.string.fix);
+        }
     }
 }
