@@ -946,12 +946,23 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                     }
                     for (DeliveryGroupItem item: mAdapterRVDeliveryItem.listDelivery) {
                         if (item.getMateryalKodu().equals(readedPalet.getMateryalKodu())){
+                            boolean isExist = false;
+                            float prevQuantity = 0;
+                            if(item.getPalets() != null){
+                                for (Palet itemPalet : item.getPalets()) {
+                                    if (itemPalet != null && itemPalet.getSeriNo().equals(readedPalet.getSeriNo())){
+                                        isExist = true;
+                                        prevQuantity = itemPalet.getMiktar();
+                                    }
+                                }
+                            }
+
                             if (dNumber > item.getMiktar()){
                                 showErrorDialog(getString(R.string.error_counting));
                                 editNumber.setText("0");
                                 return;
                             }
-                            if (item.getMiktar() < item.getMiktar2() + dNumber){
+                            if (item.getMiktar() < item.getMiktar2() + dNumber - prevQuantity){
                                 showErrorDialog(getString(R.string.error_counting));
                                 editNumber.setText("0");
                                 return;
