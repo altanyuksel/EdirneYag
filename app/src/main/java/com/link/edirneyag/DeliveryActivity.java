@@ -59,6 +59,7 @@ import DeliveryGroup.DeliveryGroup;
 import Models.Delivery.DeliveryItem;
 import Models.Delivery.Palet;
 import Models.Delivery.PalletsInfo;
+import ServiceSetting.SoundManager;
 import adapters.AdapterRVDeliveryItem;
 import DeliveryGroup.DeliveryGroupItem;
 import RestApi.RequestHandler;
@@ -979,6 +980,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                                 if (index == -1){
                                     pal.setMiktar(dNumber);
                                     item.addPalet(pal);
+                                    SoundManager.playSound(this, R.raw.beep);
                                 } else {
                                     fixedQuantity = - item.getPalets().get(index).getMiktar();;
                                     item.getPalets().get(index).setMiktar(dNumber);
@@ -986,6 +988,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                             } else {
                                 pal.setMiktar(dNumber);
                                 item.addPalet(pal);
+                                SoundManager.playSound(this, R.raw.beep);
                             }
                             quantity = mAdapterRVDeliveryItem.listDelivery.get(selectedIndex).getMiktar2();
                             mAdapterRVDeliveryItem.setSayimMiktar(selectedIndex, quantity + dNumber + fixedQuantity, "");
