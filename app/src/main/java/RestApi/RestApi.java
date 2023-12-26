@@ -26,7 +26,7 @@ public interface RestApi {
     @PUT("api/delivery/BeginDelivery")
     Call<String> setDeliveryStart(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo);
 
-    @POST("api/delivery/FinishDelivery")
+    @POST("api/delivery/FinishDeliveryGroup")
     Call<String> setDeliveryFinish(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo, @Body RequestBody requestBody);
 
     @PUT("api/delivery/UndoDelivery")
