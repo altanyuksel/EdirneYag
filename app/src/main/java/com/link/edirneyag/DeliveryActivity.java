@@ -356,7 +356,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                                 canReadBarcode = true;
                                 if (response != null && response.get_status() == 1) {
                                     barcodeString = barcodes.valueAt(0).displayValue;
-                                    if (barcodeString.length() >= 6) {
+                                    if (barcodeString.length() > 8) {
                                         barcodeString = barcodeString.substring(barcodeString.length() - 6);
                                     }
                                     txtBarcodeValue.setText(barcodeString);
