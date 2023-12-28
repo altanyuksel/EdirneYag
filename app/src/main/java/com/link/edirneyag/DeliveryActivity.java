@@ -57,14 +57,19 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.util.ArrayList;
 import java.util.List;
 
 import DeliveryGroup.DeliveryGroup;
+import Models.Delivery.Delivery;
+import Models.Delivery.DeliveryItem;
 import Models.Delivery.Palet;
 import Models.Delivery.PalletsInfo;
 import ServiceSetting.SoundManager;
@@ -111,6 +116,13 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private static final String KEY_DELIVERYITEMS_ADAPTER = "KEY_DELIVERYITEMS_ADAPTER";
     private static final String KEY_DELIVERYITEMS_SELECTED = "KEY_DELIVERYITEMS_SELECTED";
     private static final String KEY_DELIVERYNO = "KEY_DELIVERYNO";
+
+    private static final String KEY_SAVE_DELIVERYNO = "KEY_SAVE_DELIVERYNO";
+    private static final String KEY_SAVE_RESPONSE = "KEY_SAVE_RESPONSE";
+    private static final String KEY_SAVE_ADAPTER_LIST = "KEY_SAVE_ADAPTER_LIST";
+    private static final String KEY_SAVE_ADAPTER_READED_LIST = "KEY_SAVE_ADAPTER_READED_LIST";
+    private static final String KEY_SAVE_SELECTEDITEMLIST = "KEY_SAVE_SELECTEDITEMLIST";
+    private static final String KEY_SAVE_PALLETS = "KEY_SAVE_PALLETS";
     private Switch cameraSwitch;
     private boolean isCameraRunning = true;
     public List<PalletsInfo> mPalletsInfoList;
@@ -143,6 +155,12 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        LoadDeliveryList();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         initializeDetectorsAndSources();
@@ -171,6 +189,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                 .setPositiveButton(getApplicationContext().getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
+                        SaveDeliveryList();
                         finishAffinity();
                         System.exit(0);
                     }
@@ -346,6 +365,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             mAdapterRVDeliveryItem.listReadedBarcodeList = selectedItemList;
 //            mAdapterRVDeliveryItem.notifyDataSetChanged();
             fillList(response);
+        } else {
+            LoadDeliveryList();
         }
     }
 
@@ -730,15 +751,16 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         // Verileri kaydet
+        saveState(outState);
+        SaveDeliveryList();
         super.onSaveInstanceState(outState);
-        if (response != null) {
-            outState.putParcelable(KEY_DELIVERY, response);
-            outState.putIntegerArrayList(KEY_DELIVERYITEMS_SELECTED, selectedItemList);
-            outState.putParcelableArrayList(KEY_DELIVERYITEMS_ADAPTER, (ArrayList<? extends Parcelable>) mAdapterRVDeliveryItem.listDelivery);
-            outState.putString(KEY_DELIVERYNO, strCountDeliveryNo);
-        }
     }
-    //endregion
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+//endregion
 
     //region $EVENTS
     public void onClickBtnDeliveryNo(View v) {
@@ -1127,5 +1149,72 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private void hideKeyboard(View view) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    private void saveState(Bundle outState){
+        if (response != null) {
+            outState.putParcelable(KEY_DELIVERY, response);
+            outState.putIntegerArrayList(KEY_DELIVERYITEMS_SELECTED, selectedItemList);
+            outState.putParcelableArrayList(KEY_DELIVERYITEMS_ADAPTER, (ArrayList<? extends Parcelable>) mAdapterRVDeliveryItem.listDelivery);
+            outState.putString(KEY_DELIVERYNO, strCountDeliveryNo);
+        }
+    }
+
+    public void SaveDeliveryList(){
+        if(response == null) return;
+        Gson gson = new Gson();
+        String json = "";
+
+        SharedPreferences.Editor editor = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE).edit();
+        editor.putString(KEY_SAVE_DELIVERYNO, strCountDeliveryNo);
+        json = gson.toJson(response);
+        editor.putString(KEY_SAVE_RESPONSE, json);
+
+        json = gson.toJson(mPallets);
+        editor.putString(KEY_SAVE_PALLETS, json);
+
+        mAdapterRVDeliveryItem.notifyDataSetChanged();
+        json = gson.toJson(mAdapterRVDeliveryItem.listDelivery);
+        editor.putString(KEY_SAVE_ADAPTER_LIST, json);
+
+        json = gson.toJson(selectedItemList);
+        editor.putString(KEY_SAVE_SELECTEDITEMLIST, json);
+
+        editor.apply();
+    }
+
+    public void LoadDeliveryList(){
+        Gson gson = new Gson();
+        String json = "";
+
+        SharedPreferences preferences = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE);
+        strCountDeliveryNo = preferences.getString(KEY_SAVE_DELIVERYNO,"");
+
+        if (strCountDeliveryNo.equals("")) return;
+
+        json = preferences.getString(KEY_SAVE_RESPONSE,"");
+        response = new DeliveryGroup();
+        response = gson.fromJson(json, DeliveryGroup.class);
+        setDeliveryListView();
+        mPalletsInfoList = response.get_palletsInfoList();
+
+        json = preferences.getString(KEY_SAVE_ADAPTER_LIST,"");
+        Type listType = new TypeToken<List<DeliveryGroupItem>>(){}.getType();
+        mAdapterRVDeliveryItem.listDelivery = gson.fromJson(json, listType);
+        mAdapterRVDeliveryItem.notifyDataSetChanged();
+
+        json = preferences.getString(KEY_SAVE_SELECTEDITEMLIST,"");
+        listType = new TypeToken<ArrayList<Integer>>(){}.getType();
+        selectedItemList = gson.fromJson(json, listType);
+        mAdapterRVDeliveryItem.listReadedBarcodeList = selectedItemList;
+
+        json = preferences.getString(KEY_SAVE_PALLETS,"");
+        listType = new TypeToken<ArrayList<Palet>>(){}.getType();
+        mPallets = gson.fromJson(json, listType);
+        if (mPallets == null || mPallets.size() == 0){
+            mPallets = GetAllPallets();
+        }
+        ResetPalet();
+        fillList(response);
     }
 }
