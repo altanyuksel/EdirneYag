@@ -3,14 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
-        <TextView
-            android:id="@+id/txtCustomerCode"
+<!--        <TextView-->
+<!--            android:id="@+id/txtCustomerCode"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:background="@drawable/textview_border"-->
+<!--            android:padding="1dp"-->
+<!--            android:layout_weight="25"-->
+<!--            android:textSize="15dp" />-->
+        <EditText
+            android:id="@+id/editPalletQuantity"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:background="@drawable/textview_border"
-            android:padding="1dp"
-            android:layout_weight="25"
-            android:textSize="15dp" />
+            android:layout_weight="35"
+            android:ems="10"
+            android:padding="10dp"
+            android:text="">
+        </EditText>
 
         <TextView
             android:id="@+id/txtCustomerTitle"
@@ -18,16 +28,8 @@
             android:layout_height="match_parent"
             android:background="@drawable/textview_border"
             android:layout_weight="65"
-            android:padding="1dp"
+            android:layout_gravity="center"
+            android:padding="10dp"
             android:textSize="15dp" />
 
-        <EditText
-            android:id="@+id/editPalletQuantity"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:background="@drawable/textview_border"
-            android:layout_weight="10"
-            android:ems="10"
-            android:text="">
-        </EditText>
 </LinearLayout>

@@ -39,10 +39,9 @@ class MyPopUpPalet {
     private ImageButton btnClose;
     private DeliveryActivity mainAct;
     private RequestHandler requestHandler;
-    private TextView lblCustomerCode;
-    private TextView lblCustomerTitle;
-    private TextView lblPaletQuantity;
-    private TextView lblWaybillNo;
+//    private TextView lblCustomerCode;
+    private TextView lblCustomerTitle, lblPaletQuantity, lblWaybillNo;
+
     private AlertDialog.Builder errDialog;
     //endregion
 
@@ -80,7 +79,7 @@ class MyPopUpPalet {
         mainView = inflater.inflate(R.layout.activity_delivery_palet, null);
         recViewDeliveryList = mainView.findViewById(R.id.recViewPalet);
         btnClose = mainView.findViewById(R.id.btnClosePallet);
-        lblCustomerCode = mainView.findViewById(R.id.lblCustomerCode);
+//        lblCustomerCode = mainView.findViewById(R.id.lblCustomerCode);
         lblCustomerTitle = mainView.findViewById(R.id.lblCustomerTitle);
         lblPaletQuantity = mainView.findViewById(R.id.lblPaletQuantity);
         initProgressDialog();

@@ -107,7 +107,8 @@ public class AdapterRVPalet extends RecyclerView.Adapter<AdapterRVPalet.ViewHold
 
     //region $VIEWHOLDER CLASS
     class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView txtCustomerCode, txtCustomerTitle;
+//        private TextView txtCustomerCode, txtCustomerTitle;
+        private TextView txtCustomerTitle;
         private EditText editPalletQuantity;
 
         public ViewHolder(View itemView) {
@@ -116,13 +117,13 @@ public class AdapterRVPalet extends RecyclerView.Adapter<AdapterRVPalet.ViewHold
         }
 
         private void initViews() {
-            txtCustomerCode = itemView.findViewById(R.id.txtCustomerCode);
+//            txtCustomerCode = itemView.findViewById(R.id.txtCustomerCode);
             txtCustomerTitle = itemView.findViewById(R.id.txtCustomerTitle);
             editPalletQuantity = itemView.findViewById(R.id.editPalletQuantity);
         }
 
         public void setData(PalletsInfo selectedModelExample) {
-            txtCustomerCode.setText(selectedModelExample.getCustomer().get_customerCode());
+//            txtCustomerCode.setText(selectedModelExample.getCustomer().get_customerCode());
             txtCustomerTitle.setText(selectedModelExample.getCustomer().get_customerTitle());
             editPalletQuantity.setText(String.valueOf(selectedModelExample.getPalletQuantity()));
         }
