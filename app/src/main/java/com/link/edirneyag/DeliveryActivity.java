@@ -30,15 +30,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -79,7 +82,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private ProgressDialog progressDialog;
     //    private Button btnAdd, btnRemove, btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser;
     private Button btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser, btnPalet, btnClear, btnPalet2;
-    private EditText editNumber;
+    private EditText editNumber, editBarcode;
 
     AlertDialog.Builder errDialog;
     private CookieManager cookieManage; //Yeni nesil servisi cookie kullandığından cookie set ediyoruz. Bunu yapmazsak çalışmıyor.
@@ -206,6 +209,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         txtMalAdi = findViewById(R.id.txtMalAdi);
         txtPaletMiktar = findViewById(R.id.txtPaletMiktar);
         editNumber = findViewById(R.id.editSayim);
+        editBarcode = findViewById(R.id.editBarcode);
         btnPalet = findViewById(R.id.btnPallet);
         btnClear = findViewById(R.id.btnClear);
         btnPalet2 = findViewById(R.id.btnPallet2);
@@ -245,7 +249,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         btnFinish.setEnabled(false);
 
         txtUsername.setText(ServiceDefinitions.loginUser.get_userName());
-        txtMenuUsername.setText("asdsad");
+        txtMenuUsername.setText(ServiceDefinitions.loginUser.get_userName());
 
         editNumber.setFilters(new InputFilter[]{new DecimalInputFilter(3)});
         editNumber.addTextChangedListener(new TextWatcher() {
@@ -270,6 +274,43 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                 }
             }
         });
+
+        editBarcode.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                int textSize = s.length(); // Metnin uzunluğunu al
+                // Eğer metnin boyutu 13 ise Toast mesajını göster
+                if ((textSize == 8 && !TextUtils.isDigitsOnly(String.valueOf(s.charAt(0)))) || textSize == 13) {
+                    if (canReadBarcode) {
+                        canReadBarcode = false;
+                        final String barcode = editBarcode.getText().toString();
+                        editBarcode.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                readPalet(barcode);
+                            }
+                        }, 2000);
+                    }
+                    editBarcode.setText("");
+                }
+            }
+        });
+//        editBarcode.setFocusable(false);
+        // EditText'e tıklanınca klavyeyi gizle
+//        editBarcode.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                hideKeyboard();
+//            }
+//        });
 
         cameraSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -387,40 +428,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                         txtBarcodeValue.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                canReadBarcode = true;
-                                if (response != null && response.get_status() == 1) {
-                                    barcodeString = barcodes.valueAt(0).displayValue;
-//                                    if(barcodeString.length() < 9) return;
-                                    if (barcodeString.length() > 8) {
-                                        barcodeString = barcodeString.substring(barcodeString.length() - 6);
-                                    }
-                                    txtBarcodeValue.setText(barcodeString);
-                                    Log.d(TAG, "initializeDetectorsAndSources: barcode was scanned. scanned string : " + barcodeString);
-                                    setPaletRows(barcodeString);
-                                    showToastMessage(barcodeString, Toast.LENGTH_LONG, Gravity.TOP);
-                                } else if (response == null || response.get_deliveryNo() == null) {
-                                    barcodeString = barcodes.valueAt(0).displayValue;
-                                    if(barcodeString.length() != 8) return;
-                                    strCountDeliveryNo = barcodeString;
-                                    response = requestHandler.getDelivery(strCountDeliveryNo);
-                                    if (response != null && (response.get_status() != 2)){
-                                        mPalletsInfoList = response.get_palletsInfoList();
-                                        setDeliveryListView();
-                                        mAdapterRVDeliveryItem.listDelivery = response.get_deliveryItem();
-                                        selectedItemList = new ArrayList<>();
-                                        mAdapterRVDeliveryItem.listReadedBarcodeList = selectedItemList;
-                                        fillList(response);
-                                        try {
-                                            if (response.get_status() == 0){
-                                                startDelivery(strCountDeliveryNo);
-                                            }
-                                        } catch (Exception e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                    }else{
-                                        strCountDeliveryNo = "";
-                                    }
-                                }
+                                readPalet(barcodes.valueAt(0).displayValue);
                             }
                         }, 2000);
                     }
@@ -633,14 +641,15 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         webViewVehicle.loadData(htmlContent, "text/html", "UTF-8");
         strCountDeliveryNo = "";
         selectedItemList.clear();
-        mAdapterRVDeliveryItem.listReadedBarcodeList.clear();
+        if (mAdapterRVDeliveryItem != null){
+            mAdapterRVDeliveryItem.listReadedBarcodeList.clear();
+            int size = mAdapterRVDeliveryItem.listDelivery.size();
+            mAdapterRVDeliveryItem.listDelivery.clear();
+            mAdapterRVDeliveryItem.notifyItemRangeRemoved(0, size);
+        }
         response = new DeliveryGroup();
         mPalletsInfoList = response.get_palletsInfoList();
         selectedIndex = -1;
-
-        int size = mAdapterRVDeliveryItem.listDelivery.size();
-        mAdapterRVDeliveryItem.listDelivery.clear();
-        mAdapterRVDeliveryItem.notifyItemRangeRemoved(0, size);
 
         btnStart.setEnabled(false);
         btnUndo.setEnabled(false);
@@ -1073,5 +1082,50 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                 onClickBtnChangeUser(btnChangeUser);
                 break;
         }
+    }
+
+    private void readPalet(String barcode){
+        canReadBarcode = true;
+        if (response != null && response.get_status() == 1) {
+//            barcodeString = barcodes.valueAt(0).displayValue;
+            barcodeString = barcode;
+//                                    if(barcodeString.length() < 9) return;
+            if (barcodeString.length() > 8) {
+                barcodeString = barcodeString.substring(barcodeString.length() - 6);
+            }
+            txtBarcodeValue.setText(barcodeString);
+            Log.d(TAG, "initializeDetectorsAndSources: barcode was scanned. scanned string : " + barcodeString);
+            setPaletRows(barcodeString);
+            showToastMessage(barcodeString, Toast.LENGTH_LONG, Gravity.TOP);
+        } else if (response == null || response.get_deliveryNo() == null) {
+//            barcodeString = barcodes.valueAt(0).displayValue;
+            barcodeString = barcode;
+            if(barcodeString.length() != 8) return;
+            strCountDeliveryNo = barcodeString;
+            response = requestHandler.getDelivery(strCountDeliveryNo);
+            if (response != null && (response.get_status() != 2)){
+                mPalletsInfoList = response.get_palletsInfoList();
+                setDeliveryListView();
+                mAdapterRVDeliveryItem.listDelivery = response.get_deliveryItem();
+                selectedItemList = new ArrayList<>();
+                mAdapterRVDeliveryItem.listReadedBarcodeList = selectedItemList;
+                fillList(response);
+                try {
+                    if (response.get_status() == 0){
+                        startDelivery(strCountDeliveryNo);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }else{
+                strCountDeliveryNo = "";
+            }
+        }
+    }
+
+    // Klavyeyi gizleme metodu
+    private void hideKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

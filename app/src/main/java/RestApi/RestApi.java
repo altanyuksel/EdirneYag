@@ -23,13 +23,13 @@ public interface RestApi {
     @GET("api/delivery")
     Call<ResponseDelivery> getDelivery(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo, @Query("page") int page, @Query("pageSize") int pageSize);
 
-    @PUT("api/delivery/BeginDelivery")
+    @GET("api/delivery/BeginDelivery")
     Call<String> setDeliveryStart(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo);
 
     @POST("api/delivery/FinishDeliveryGroup")
     Call<String> setDeliveryFinish(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo, @Body RequestBody requestBody);
 
-    @PUT("api/delivery/UndoDelivery")
+    @GET("api/delivery/UndoDelivery")
     Call<String> setDeliveryUndo(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo);
 
     @GET("api/delivery/palet")
