@@ -64,4 +64,5 @@
     <string name="clear">Sayfayı Temizle</string>
     <string name="delete">Sil</string>
     <string name="delete_selected_pallet">numaralı palet silinecek. Onaylıyor musunuz?</string>
+    <string name="logout">Çıkış</string>
 </resources>

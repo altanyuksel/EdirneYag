@@ -3,4 +3,26 @@
     <style name="Theme.EdirneYag" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Tema özellikleri buraya eklenebilir -->
     </style>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Diğer stil özellikleri -->
+
+        <item name="android:popupMenuStyle">@style/PopupMenu</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView</item>
+        <item name="android:actionBarPopupTheme">@style/AppTheme.PopupOverlay</item>
+    </style>
+
+    <!-- PopupMenu stil tanımı -->
+    <style name="PopupMenu" parent="Widget.AppCompat.PopupMenu">
+        <!-- PopupMenu stil özellikleri -->
+    </style>
+
+    <!-- DropDownListView stil tanımı -->
+    <style name="DropDownListView" parent="Widget.AppCompat.ListView.DropDown">
+        <!-- DropDownListView stil özellikleri -->
+    </style>
+
+    <!-- ActionBarPopupTheme stil tanımı -->
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <!-- ActionBarPopupTheme stil özellikleri -->
+    </style>
 </resources>

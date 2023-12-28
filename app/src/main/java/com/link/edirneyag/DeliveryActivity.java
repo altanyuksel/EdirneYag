@@ -6,6 +6,7 @@ import static Utils.UtilsCommon.PREF_CREDENTIAL;
 import static Utils.UtilsCommon.serviceDefinitions;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,10 +18,13 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,6 +35,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -48,6 +53,7 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.android.material.navigation.NavigationView;
 
 import java.io.IOException;
 import java.net.CookieHandler;
@@ -56,7 +62,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import DeliveryGroup.DeliveryGroup;
-import Models.Delivery.DeliveryItem;
 import Models.Delivery.Palet;
 import Models.Delivery.PalletsInfo;
 import ServiceSetting.SoundManager;
@@ -85,7 +90,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     private SurfaceView surfaceViewDelivery;
     private SurfaceHolder mSurfaceHolder;
-    private TextView txtBarcodeValue, txtUsername, txtMalAdi, txtPaletMiktar;
+    private TextView txtBarcodeValue, txtUsername, txtMenuUsername, txtMalAdi, txtPaletMiktar;
     private WebView webViewVehicle;
     public static String strCountDeliveryNo, barcodeString;
     public static Palet readedPalet;
@@ -108,6 +113,13 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     public List<PalletsInfo> mPalletsInfoList;
 
     public List<Palet> mPallets;
+
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private NavigationView navigationView;
+
+    public DeliveryActivity() {
+    }
     //endregion
 
     //region $ACTIVITY OVERRIDE METHODS
@@ -117,6 +129,14 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         initViews();
         initDefinitions(savedInstanceState);
         checkService();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -164,6 +184,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     //endregion
 
     //region $METHODS
+    @SuppressLint("MissingInflatedId")
     private void initViews() {
 //        getSupportActionBar().hide();
         setContentView(R.layout.activity_delivery);
@@ -191,6 +212,16 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
         mSurfaceHolder = surfaceViewDelivery.getHolder();
 
+        drawerLayout = findViewById(R.id.drawer_layout);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.common_open_on_phone, R.string.barcode_read);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        navigationView = findViewById(R.id.nav_view);
+        txtMenuUsername = navigationView.getHeaderView(0).findViewById(R.id.txtMenuUsername);
+        setupDrawerContent(navigationView);
+
+
         initProgressDialog();
         initErrorDialog();
 
@@ -214,6 +245,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         btnFinish.setEnabled(false);
 
         txtUsername.setText(ServiceDefinitions.loginUser.get_userName());
+        txtMenuUsername.setText("asdsad");
 
         editNumber.setFilters(new InputFilter[]{new DecimalInputFilter(3)});
         editNumber.addTextChangedListener(new TextWatcher() {
@@ -1011,6 +1043,35 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         btnUpdate.setText(R.string.add);
         if(isExist){
             btnUpdate.setText(R.string.fix);
+        }
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                        selectDrawerItem(menuItem);
+                        return true;
+                    }
+                });
+    }
+
+    private void selectDrawerItem(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.nav_clear:
+                // Home'a tıklanıldığında yapılacak işlemler
+                onClickBtnClear(btnClear);
+                break;
+            case R.id.nav_pallet:
+                onClickBtnPalet(btnPalet);
+                break;
+            case R.id.nav_pallet_delete:
+                onClickBtnPalet2(btnPalet2);
+                break;
+            case R.id.nav_logout:
+                onClickBtnChangeUser(btnChangeUser);
+                break;
         }
     }
 }
