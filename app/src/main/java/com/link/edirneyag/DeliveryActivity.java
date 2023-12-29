@@ -123,6 +123,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private static final String KEY_SAVE_ADAPTER_READED_LIST = "KEY_SAVE_ADAPTER_READED_LIST";
     private static final String KEY_SAVE_SELECTEDITEMLIST = "KEY_SAVE_SELECTEDITEMLIST";
     private static final String KEY_SAVE_PALLETS = "KEY_SAVE_PALLETS";
+    private static final String KEY_SAVE_PALLETS_INFO = "KEY_SAVE_PALLETS_INFO";
     private Switch cameraSwitch;
     private boolean isCameraRunning = true;
     public List<PalletsInfo> mPalletsInfoList;
@@ -178,6 +179,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     @Override
     protected void onStop() {
+        SaveDeliveryList();
         super.onStop();
     }
 
@@ -319,6 +321,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                         }, 2000);
                     }
                     editBarcode.setText("");
+                    editBarcode.requestFocus();
                 }
             }
         });
@@ -1173,6 +1176,9 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         json = gson.toJson(mPallets);
         editor.putString(KEY_SAVE_PALLETS, json);
 
+        json = gson.toJson(mPalletsInfoList);
+        editor.putString(KEY_SAVE_PALLETS_INFO, json);
+
         mAdapterRVDeliveryItem.notifyDataSetChanged();
         json = gson.toJson(mAdapterRVDeliveryItem.listDelivery);
         editor.putString(KEY_SAVE_ADAPTER_LIST, json);
@@ -1196,7 +1202,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         response = new DeliveryGroup();
         response = gson.fromJson(json, DeliveryGroup.class);
         setDeliveryListView();
-        mPalletsInfoList = response.get_palletsInfoList();
+
+//        mPalletsInfoList = response.get_palletsInfoList();
 
         json = preferences.getString(KEY_SAVE_ADAPTER_LIST,"");
         Type listType = new TypeToken<List<DeliveryGroupItem>>(){}.getType();
@@ -1215,6 +1222,13 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             mPallets = GetAllPallets();
         }
         ResetPalet();
+
+        json = preferences.getString(KEY_SAVE_PALLETS_INFO,"");
+        listType = new TypeToken<ArrayList<PalletsInfo>>(){}.getType();
+        mPalletsInfoList = gson.fromJson(json, listType);
+        if (mPalletsInfoList == null){
+            mPalletsInfoList = new ArrayList<>();
+        }
         fillList(response);
     }
 }

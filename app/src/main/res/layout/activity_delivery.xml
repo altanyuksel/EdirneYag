@@ -72,11 +72,11 @@
                         android:layout_height="match_parent"
                         android:textAlignment="center"/>
                 </LinearLayout>
-                </LinearLayout>
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="10"
+                android:layout_weight="15"
                 android:orientation="horizontal"
                 android:gravity="top">
                 <LinearLayout
@@ -85,6 +85,16 @@
                     android:layout_weight="100"
                     android:layout_gravity="top"
                     android:orientation="vertical">
+                    <EditText
+                        android:id="@+id/editBarcode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@color/Red"
+                        android:padding="5dp"
+                        android:hint="@string/barcode"
+                        android:textAlignment="center"
+                        android:text=""></EditText>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -212,7 +222,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="30"
+                android:layout_weight="27"
                 android:orientation="horizontal"
                 android:gravity="top">
                 <SurfaceView
@@ -245,15 +255,6 @@
                             android:text="@string/pallet"
                             android:layout_gravity="center_horizontal">
                         </Button>
-                        <EditText
-                            android:id="@+id/editBarcode"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@color/LightGray"
-                            android:text=""
-                            android:padding="5dp"
-                            android:layout_gravity="center_horizontal">
-                        </EditText>
                     </LinearLayout>
 
                     <Switch
