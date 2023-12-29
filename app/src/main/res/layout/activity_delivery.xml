@@ -94,6 +94,7 @@
                         android:padding="5dp"
                         android:hint="@string/barcode"
                         android:textAlignment="center"
+                        android:inputType="number"
                         android:text=""></EditText>
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -153,7 +154,7 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="30"
-                            android:ems="10"
+                            android:inputType="number"
                             android:text="">
                         </EditText>
                         <Button
@@ -233,7 +234,7 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="50"
+                    android:layout_weight="74"
                     android:orientation="vertical">
                     <TextView
                         android:id="@+id/txtBarcodeValue"
@@ -269,9 +270,9 @@
                         android:checked="true"/>
                 </LinearLayout>
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="10"
+                    android:layout_weight="25"
                     android:layout_gravity="bottom"
                     android:orientation="vertical">
                     <Button
@@ -295,6 +296,7 @@
                         android:layout_weight="50"
                         android:text="@string/clear"
                         android:textSize="11dp"
+                        android:layout_gravity="center"
                         android:layout_marginTop="1dp">
                     </Button>
                     <Button
@@ -303,6 +305,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="50"
                         android:text="@string/pallet_delete"
+                        android:layout_gravity="center"
                         android:textSize="11dp"
                         android:layout_marginTop="1dp">
                     </Button>

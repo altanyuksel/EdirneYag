@@ -116,6 +116,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private static final String KEY_DELIVERYITEMS_ADAPTER = "KEY_DELIVERYITEMS_ADAPTER";
     private static final String KEY_DELIVERYITEMS_SELECTED = "KEY_DELIVERYITEMS_SELECTED";
     private static final String KEY_DELIVERYNO = "KEY_DELIVERYNO";
+    private static final String KEY_CAMERA_STATUS = "KEY_CAMERA_STATUS";
 
     private static final String KEY_SAVE_DELIVERYNO = "KEY_SAVE_DELIVERYNO";
     private static final String KEY_SAVE_RESPONSE = "KEY_SAVE_RESPONSE";
@@ -143,6 +144,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initViews();
+//        setCameraStatus();
         initDefinitions(savedInstanceState);
         checkService();
     }
@@ -226,7 +228,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         recViewDeliveryList = findViewById(R.id.recViewDeliveryItemList);
         btnChangeUser = findViewById(R.id.btnChangeUser);
         cameraSwitch = findViewById(R.id.swCamera);
-        cameraSwitch.setVisibility(View.GONE);
+//        cameraSwitch.setVisibility(View.GONE);
         txtMalAdi = findViewById(R.id.txtMalAdi);
         txtPaletMiktar = findViewById(R.id.txtPaletMiktar);
         editNumber = findViewById(R.id.editSayim);
@@ -317,14 +319,16 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                             @Override
                             public void run() {
                                 readPalet(barcode);
+                                editBarcode.setText("");
                             }
                         }, 2000);
                     }
-                    editBarcode.setText("");
                     editBarcode.requestFocus();
+                    hideKeyboard(editBarcode);
                 }
             }
         });
+        editBarcode.requestFocus();
 //        editBarcode.setFocusable(false);
         // EditText'e tıklanınca klavyeyi gizle
 //        editBarcode.setOnClickListener(new View.OnClickListener() {
@@ -344,8 +348,25 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                     // Switch kapalıysa, kamerayı durdur
                     stopCamera();
                 }
+                //kameranın durumunu kaydet
+                saveCameraStatus(isChecked);
             }
         });
+    }
+
+    private void saveCameraStatus(boolean open) {
+        SharedPreferences.Editor editor = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE).edit();
+        editor.putBoolean(KEY_CAMERA_STATUS, open);
+    }
+
+    private void setCameraStatus(){
+        SharedPreferences preferences = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE);
+        boolean isOpen = preferences.getBoolean(KEY_CAMERA_STATUS,false);
+        if (isOpen && isCameraRunning == false){
+            startCamera();
+        }else if(!isOpen && isCameraRunning == true){
+            stopCamera();
+        }
     }
 
     private void initDefinitions(Bundle savedInstanceState) {
@@ -439,7 +460,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             public void release() {
                 if (!barcodeString.equals("")) {
 //                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.barcode_read), Toast.LENGTH_SHORT).show();
-                    showToastMessage(getString(R.string.barcode_read), Toast.LENGTH_LONG, Gravity.TOP);
+//                    showToastMessage(getString(R.string.barcode_read), Toast.LENGTH_LONG, Gravity.TOP);
                 }
             }
 
@@ -679,6 +700,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         btnUndo.setEnabled(false);
         btnFinish.setEnabled(false);
         canReadBarcode = true;
+        txtBarcodeValue.setText("");
     }
 
 //    private String controlConditions() {
@@ -890,6 +912,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     public void onClickBtnUpdate(View v) {
         addRow();
+        editBarcode.requestFocus();
     }
 
     public void onClickBtnChangeUser(View v) {
@@ -958,6 +981,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         editNumber.setText("0");
         btnUpdate.setText(R.string.add);
         readedPalet = null;
+        editBarcode.requestFocus();
     }
     private String setWebViewVehicleInfo(){
         String htmlContent = "<!DOCTYPE html>\n" +

@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:background="@drawable/textview_border"
             android:layout_weight="35"
-            android:ems="10"
+            android:inputType="number"
             android:padding="10dp"
             android:text="">
         </EditText>
