@@ -329,12 +329,11 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             }
         });
         editBarcode.requestFocus();
-//        editBarcode.setFocusable(false);
         // EditText'e tıklanınca klavyeyi gizle
 //        editBarcode.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                hideKeyboard();
+//                hideKeyboard(editBarcode);
 //            }
 //        });
 
@@ -680,6 +679,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     private void clearPage() {
         ClearPalletRow();
+        editBarcode.setText("");
         btnDeliveryNo.setText(getString(R.string.delivery));
 //        txtVehicle.setText("");
         String htmlContent = "<html><body><h1></h1></body></html>";
@@ -912,6 +912,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     public void onClickBtnUpdate(View v) {
         addRow();
+        hideKeyboard(editNumber);
         editBarcode.requestFocus();
     }
 
