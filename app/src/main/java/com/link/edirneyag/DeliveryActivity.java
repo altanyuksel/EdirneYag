@@ -30,14 +30,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -68,8 +66,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import DeliveryGroup.DeliveryGroup;
-import Models.Delivery.Delivery;
-import Models.Delivery.DeliveryItem;
 import Models.Delivery.Palet;
 import Models.Delivery.PalletsInfo;
 import ServiceSetting.SoundManager;
@@ -134,6 +130,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
+    private SharedPreferences.Editor mEditor;
+    private SharedPreferences mPreferences;
 
     public DeliveryActivity() {
     }
@@ -355,13 +353,13 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     private void saveCameraStatus(boolean open) {
-        SharedPreferences.Editor editor = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE).edit();
-        editor.putBoolean(KEY_CAMERA_STATUS, open);
+        mEditor = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE).edit();
+        mEditor.putBoolean(KEY_CAMERA_STATUS, open);
     }
 
     private void setCameraStatus(){
-        SharedPreferences preferences = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE);
-        boolean isOpen = preferences.getBoolean(KEY_CAMERA_STATUS,false);
+        mPreferences = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE);
+        boolean isOpen = mPreferences.getBoolean(KEY_CAMERA_STATUS,false);
         if (isOpen && isCameraRunning == false){
             startCamera();
         }else if(!isOpen && isCameraRunning == true){
@@ -370,6 +368,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     private void initDefinitions(Bundle savedInstanceState) {
+        mEditor = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE).edit();
+        mPreferences = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE);
         mContext = getApplicationContext();
         mRequestQueue = Volley.newRequestQueue(mContext);
         cookieManage = new CookieManager();
@@ -557,14 +557,14 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     private void openPopUpWindowPallet(View v) {
-        if (response != null){
+        if (response != null && mPalletsInfoList != null){
             mPalletsInfoList = response.get_palletsInfoList();
             popUpClassPallet = new MyPopUpPalet(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this, mPalletsInfoList);
             popUpClassPallet.showPopupWindow();
         }
     }
     private void openPopUpWindowPallet2(View v) {
-        if (response != null){
+        if (response != null && mPallets != null){
             mPallets = GetAllPallets();
             popUpClassPallet2 = new MyPopUpPalet2(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this, mPallets);
             popUpClassPallet2.showPopupWindow();
@@ -948,10 +948,10 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     public void DeleteUser() {
-        SharedPreferences.Editor editor = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE).edit();
-        editor.remove(KEY_USERNAME);
-        editor.remove(KEY_PASSWORD);
-        editor.apply();
+        mEditor = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE).edit();
+        mEditor.remove(KEY_USERNAME);
+        mEditor.remove(KEY_PASSWORD);
+        mEditor.apply();
     }
 
     private void startCamera() {
@@ -1198,62 +1198,59 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         Gson gson = new Gson();
         String json = "";
 
-        SharedPreferences.Editor editor = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE).edit();
-        editor.putString(KEY_SAVE_DELIVERYNO, strCountDeliveryNo);
+        mEditor = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE).edit();
+        mEditor.putString(KEY_SAVE_DELIVERYNO, strCountDeliveryNo);
         json = gson.toJson(response);
-        editor.putString(KEY_SAVE_RESPONSE, json);
+        mEditor.putString(KEY_SAVE_RESPONSE, json);
 
         json = gson.toJson(mPallets);
-        editor.putString(KEY_SAVE_PALLETS, json);
+        mEditor.putString(KEY_SAVE_PALLETS, json);
 
         json = gson.toJson(mPalletsInfoList);
-        editor.putString(KEY_SAVE_PALLETS_INFO, json);
+        mEditor.putString(KEY_SAVE_PALLETS_INFO, json);
 
         mAdapterRVDeliveryItem.notifyDataSetChanged();
         json = gson.toJson(mAdapterRVDeliveryItem.listDelivery);
-        editor.putString(KEY_SAVE_ADAPTER_LIST, json);
+        mEditor.putString(KEY_SAVE_ADAPTER_LIST, json);
 
         json = gson.toJson(selectedItemList);
-        editor.putString(KEY_SAVE_SELECTEDITEMLIST, json);
+        mEditor.putString(KEY_SAVE_SELECTEDITEMLIST, json);
 
-        editor.apply();
+        mEditor.apply();
     }
 
     public void LoadDeliveryList(){
         Gson gson = new Gson();
         String json = "";
 
-        SharedPreferences preferences = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE);
-        strCountDeliveryNo = preferences.getString(KEY_SAVE_DELIVERYNO,"");
+        mPreferences = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE);
+        strCountDeliveryNo = mPreferences.getString(KEY_SAVE_DELIVERYNO,"");
 
         if (strCountDeliveryNo.equals("")) return;
 
-        json = preferences.getString(KEY_SAVE_RESPONSE,"");
+        json = mPreferences.getString(KEY_SAVE_RESPONSE,"");
         response = new DeliveryGroup();
         response = gson.fromJson(json, DeliveryGroup.class);
         setDeliveryListView();
 
-//        mPalletsInfoList = response.get_palletsInfoList();
-
-        json = preferences.getString(KEY_SAVE_ADAPTER_LIST,"");
+        json = mPreferences.getString(KEY_SAVE_ADAPTER_LIST,"");
         Type listType = new TypeToken<List<DeliveryGroupItem>>(){}.getType();
         mAdapterRVDeliveryItem.listDelivery = gson.fromJson(json, listType);
         mAdapterRVDeliveryItem.notifyDataSetChanged();
 
-        json = preferences.getString(KEY_SAVE_SELECTEDITEMLIST,"");
+        json = mPreferences.getString(KEY_SAVE_SELECTEDITEMLIST,"");
         listType = new TypeToken<ArrayList<Integer>>(){}.getType();
         selectedItemList = gson.fromJson(json, listType);
         mAdapterRVDeliveryItem.listReadedBarcodeList = selectedItemList;
 
-        json = preferences.getString(KEY_SAVE_PALLETS,"");
+        json = mPreferences.getString(KEY_SAVE_PALLETS,"");
         listType = new TypeToken<ArrayList<Palet>>(){}.getType();
         mPallets = gson.fromJson(json, listType);
         if (mPallets == null || mPallets.size() == 0){
             mPallets = GetAllPallets();
         }
         ResetPalet();
-
-        json = preferences.getString(KEY_SAVE_PALLETS_INFO,"");
+        json = mPreferences.getString(KEY_SAVE_PALLETS_INFO,"");
         listType = new TypeToken<ArrayList<PalletsInfo>>(){}.getType();
         mPalletsInfoList = gson.fromJson(json, listType);
         if (mPalletsInfoList == null){
