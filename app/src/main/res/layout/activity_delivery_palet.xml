@@ -31,21 +31,23 @@
                 <TextView
                     android:id="@+id/lblPaletQuantity"
                     android:layout_width="0dp"
-                    android:layout_weight="35"
+                    android:layout_weight="20"
                     android:layout_height="wrap_content"
                     android:background="#1234"
                     android:textSize="15dp"
+                    android:paddingLeft="5dp"
                     android:textStyle="bold"
                     android:text="@string/piece"/>
 
                 <TextView
                     android:id="@+id/lblCustomerTitle"
                     android:layout_width="0dp"
-                    android:layout_weight="65"
+                    android:layout_weight="80"
                     android:layout_height="wrap_content"
                     android:background="#1234"
                     android:textSize="15dp"
                     android:textStyle="bold"
+                    android:paddingLeft="5dp"
                     android:text="@string/customer_title"/>
             </LinearLayout>
             <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
