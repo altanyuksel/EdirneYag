@@ -144,7 +144,6 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initViews();
-//        setCameraStatus();
         initDefinitions(savedInstanceState);
         checkService();
     }
@@ -160,7 +159,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     @Override
     protected void onRestart() {
         super.onRestart();
-        LoadDeliveryList();
+//        LoadDeliveryList();
     }
 
     @Override
@@ -181,7 +180,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     @Override
     protected void onStop() {
-        SaveDeliveryList();
+//        SaveDeliveryList();
         super.onStop();
     }
 
@@ -193,7 +192,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                 .setPositiveButton(getApplicationContext().getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
-                        SaveDeliveryList();
+//                        SaveDeliveryList();
                         finishAffinity();
                         System.exit(0);
                     }
@@ -238,6 +237,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         btnPalet2 = findViewById(R.id.btnPallet2);
 
         mSurfaceHolder = surfaceViewDelivery.getHolder();
+
+        cameraSwitch.setChecked(false);
 
         drawerLayout = findViewById(R.id.drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.common_open_on_phone, R.string.barcode_read);
@@ -378,16 +379,17 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         selectedIndex = -1;
         mPalletsInfoList = new ArrayList<PalletsInfo>();
         if (savedInstanceState != null) {
-            // Eğer önceki bir durum kaydedilmişse, verileri geri yükle
-            strCountDeliveryNo = savedInstanceState.getString(KEY_DELIVERYNO);
-            response = savedInstanceState.getParcelable(KEY_DELIVERY);
-            mPalletsInfoList = response.get_palletsInfoList();
-            setDeliveryListView();
-            mAdapterRVDeliveryItem.listDelivery = savedInstanceState.getParcelableArrayList(KEY_DELIVERYITEMS_ADAPTER);
-            selectedItemList = savedInstanceState.getIntegerArrayList(KEY_DELIVERYITEMS_SELECTED);
-            mAdapterRVDeliveryItem.listReadedBarcodeList = selectedItemList;
-//            mAdapterRVDeliveryItem.notifyDataSetChanged();
-            fillList(response);
+//            // Eğer önceki bir durum kaydedilmişse, verileri geri yükle
+//            strCountDeliveryNo = savedInstanceState.getString(KEY_DELIVERYNO);
+//            response = savedInstanceState.getParcelable(KEY_DELIVERY);
+//            mPalletsInfoList = response.get_palletsInfoList();
+//            setDeliveryListView();
+//            mAdapterRVDeliveryItem.listDelivery = savedInstanceState.getParcelableArrayList(KEY_DELIVERYITEMS_ADAPTER);
+//            selectedItemList = savedInstanceState.getIntegerArrayList(KEY_DELIVERYITEMS_SELECTED);
+//            mAdapterRVDeliveryItem.listReadedBarcodeList = selectedItemList;
+////            mAdapterRVDeliveryItem.notifyDataSetChanged();
+//            fillList(response);
+            LoadDeliveryList();
         } else {
             LoadDeliveryList();
         }
@@ -776,7 +778,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         // Verileri kaydet
-        saveState(outState);
+//        saveState(outState);
         SaveDeliveryList();
         super.onSaveInstanceState(outState);
     }
@@ -1103,6 +1105,10 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         if(isExist){
             btnUpdate.setText(R.string.fix);
         }
+        editNumber.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(editNumber, InputMethodManager.SHOW_IMPLICIT);
+        editNumber.selectAll();
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
