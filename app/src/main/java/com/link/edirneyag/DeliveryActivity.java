@@ -1117,15 +1117,14 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     private void selectDrawerItem(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
-            case R.id.nav_clear:
-                // Home'a tıklanıldığında yapılacak işlemler
-                onClickBtnClear(btnClear);
-                break;
             case R.id.nav_pallet:
                 onClickBtnPalet(btnPalet);
                 break;
             case R.id.nav_pallet_delete:
                 onClickBtnPalet2(btnPalet2);
+                break;
+            case R.id.nav_clear:
+                onClickBtnClear(btnClear);
                 break;
             case R.id.nav_logout:
                 onClickBtnChangeUser(btnChangeUser);

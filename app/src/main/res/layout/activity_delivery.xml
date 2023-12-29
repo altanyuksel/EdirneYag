@@ -94,7 +94,7 @@
                         android:padding="5dp"
                         android:hint="@string/barcode"
                         android:textAlignment="center"
-                        android:inputType="number"
+                        android:inputType="text"
                         android:text=""></EditText>
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -238,36 +238,44 @@
                     android:orientation="vertical">
                     <TextView
                         android:id="@+id/txtBarcodeValue"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="50"
+                        android:layout_weight="30"
                         android:text="No Barcode Detected"
                         android:textColor="@android:color/black"
                         android:textSize="25sp" />
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="50"
-                        android:orientation="vertical">
-                        <Button
-                            android:id="@+id/btnPallet"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/pallet"
-                            android:layout_gravity="center_horizontal">
-                        </Button>
-                    </LinearLayout>
-
                     <Switch
                         android:id="@+id/swCamera"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
-                        android:layout_weight="10"
+                        android:layout_weight="5"
                         android:text="Kamera On/Off"
                         android:layout_gravity="bottom"
-                        android:layout_marginBottom="20dp"
                         android:layout_marginLeft="5dp"
                         android:checked="true"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="65"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp">
+                        <Button
+                            android:id="@+id/btnPallet"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="50"
+                            android:text="@string/pallet"
+                            android:layout_gravity="center">
+                        </Button>
+                        <Button
+                            android:id="@+id/btnPallet2"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="50"
+                            android:text="@string/pallet_delete"
+                            android:layout_gravity="center">
+                        </Button>
+                    </LinearLayout>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="0dp"
@@ -278,13 +286,15 @@
                     <Button
                         android:id="@+id/btnChangeUser"
                         android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="20"
                         android:layout_gravity="center"
                         android:background="@drawable/login" />
                     <TextView
                         android:id="@+id/txtUsername"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="26"
                         android:text=""
                         android:layout_gravity="center"
                         android:textColor="@android:color/black"
@@ -292,21 +302,9 @@
                     <Button
                         android:id="@+id/btnClear"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="50"
+                        android:layout_height="50dp"
                         android:text="@string/clear"
-                        android:textSize="11dp"
                         android:layout_gravity="center"
-                        android:layout_marginTop="1dp">
-                    </Button>
-                    <Button
-                        android:id="@+id/btnPallet2"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="50"
-                        android:text="@string/pallet_delete"
-                        android:layout_gravity="center"
-                        android:textSize="11dp"
                         android:layout_marginTop="1dp">
                     </Button>
                 </LinearLayout>

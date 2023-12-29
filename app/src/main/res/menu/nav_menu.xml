@@ -4,11 +4,6 @@
     <group android:checkableBehavior="single">
 
         <item
-            android:id="@+id/nav_clear"
-            android:icon="@drawable/bg_round"
-            android:title="@string/clear" />
-
-        <item
             android:id="@+id/nav_pallet"
             android:icon="@drawable/bg_round"
             android:title="@string/pallet" />
@@ -17,6 +12,11 @@
             android:id="@+id/nav_pallet_delete"
             android:icon="@drawable/bg_round"
             android:title="@string/pallet_delete" />
+
+        <item
+            android:id="@+id/nav_clear"
+            android:icon="@drawable/bg_round"
+            android:title="@string/clear" />
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/bg_round"
