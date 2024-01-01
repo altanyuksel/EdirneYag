@@ -22,7 +22,6 @@ import java.net.CookieManager;
 import java.util.List;
 
 import Models.Delivery.Palet;
-import Models.Delivery.PalletsInfo;
 import RestApi.RequestHandler;
 import ServiceSetting.ServiceDefinitions;
 import adapters.AdapterRVPalet2;
@@ -32,7 +31,7 @@ public class MyPopUpPalet2 {
     private final String TAG = "DELIVERY_SELECT2";
     private static ServiceDefinitions serviceDefinitions;
     private PopupWindow popupWindow;
-    private List<Palet> palletsInfoList;
+    private List<Palet> palletsList;
     private ProgressDialog progressDialog;
     private AdapterRVPalet2 mAdapterRVPalet;
     private RecyclerView recViewDeliveryList;
@@ -49,11 +48,11 @@ public class MyPopUpPalet2 {
     //endregion
 
     //region $METHODS
-    public MyPopUpPalet2(RequestQueue mReqQueue, ServiceDefinitions serviceDefinitions, CookieManager cookieManage, final View mainView, DeliveryActivity mainAct, List<Palet> palletsInfoList) {
+    public MyPopUpPalet2(RequestQueue mReqQueue, ServiceDefinitions serviceDefinitions, CookieManager cookieManage, final View mainView, DeliveryActivity mainAct, List<Palet> palletsList) {
         this.serviceDefinitions = serviceDefinitions;
         this.mainView = mainView;
         this.mainAct = mainAct;
-        this.palletsInfoList = palletsInfoList;
+        this.palletsList = palletsList;
     }
     private void initErrorDialog() {
         errDialog = new AlertDialog.Builder(mainAct);
@@ -89,7 +88,7 @@ public class MyPopUpPalet2 {
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainAct.mPallets = mAdapterRVPalet.palets;
+                mainAct.mReadedPallets = mAdapterRVPalet.palets;
                 mainAct.ResetPalet();
                 popupWindow.dismiss();
             }
@@ -142,7 +141,7 @@ public class MyPopUpPalet2 {
         progressDialog.dismiss();
     }
     private void setDeliveryListView() {
-        mAdapterRVPalet = new AdapterRVPalet2(mainView.getContext(), palletsInfoList, mainAct);
+        mAdapterRVPalet = new AdapterRVPalet2(mainView.getContext(), palletsList, mainAct);
         recViewDeliveryList.setAdapter(mAdapterRVPalet);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mainView.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
