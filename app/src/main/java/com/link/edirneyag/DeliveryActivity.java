@@ -108,19 +108,16 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private static final String KEY_DELIVERYITEMS_ADAPTER = "KEY_DELIVERYITEMS_ADAPTER";
     private static final String KEY_DELIVERYITEMS_SELECTED = "KEY_DELIVERYITEMS_SELECTED";
     private static final String KEY_DELIVERYNO = "KEY_DELIVERYNO";
-    private static final String KEY_CAMERA_STATUS = "KEY_CAMERA_STATUS";
-
     private static final String KEY_SAVE_DELIVERYNO = "KEY_SAVE_DELIVERYNO";
     private static final String KEY_SAVE_RESPONSE = "KEY_SAVE_RESPONSE";
     private static final String KEY_SAVE_ADAPTER_LIST = "KEY_SAVE_ADAPTER_LIST";
     private static final String KEY_SAVE_SELECTEDITEMLIST = "KEY_SAVE_SELECTEDITEMLIST";
-    private static final String KEY_SAVE_PALLETS = "KEY_SAVE_PALLETS";
     private static final String KEY_SAVE_PALLETS_INFO = "KEY_SAVE_PALLETS_INFO";
     private Switch cameraSwitch;
     private boolean isCameraRunning = true;
     public List<PalletsInfo> mPalletsInfoList;
 
-    public List<Palet> mPallets;
+    public List<Palet> mReadedPallets;
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
@@ -173,7 +170,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     @Override
     protected void onStop() {
-//        SaveDeliveryList();
+        saveDeliveryList();
         super.onStop();
     }
 
@@ -339,15 +336,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                     // Switch kapalıysa, kamerayı durdur
                     stopCamera();
                 }
-                //kameranın durumunu kaydet
-                saveCameraStatus(isChecked);
             }
         });
-    }
-
-    private void saveCameraStatus(boolean open) {
-        mEditor = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE).edit();
-        mEditor.putBoolean(KEY_CAMERA_STATUS, open);
     }
 
     private void initDefinitions() {
@@ -361,7 +351,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         selectedItemList = new ArrayList<>();
         selectedIndex = -1;
         mPalletsInfoList = new ArrayList<>();
-        LoadDeliveryList();
+        loadDeliveryList();
     }
 
     private void checkService() {
@@ -507,7 +497,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         }
         if (readedPalet == null) {
             showToastMessage(getString(R.string.couldnot_find_pallet), Toast.LENGTH_LONG, Gravity.TOP);
-        }else if(index == -1){
+        }else if(selectedIndex == -1){
             showToastMessage(getString(R.string.couldnot_find_pallet_delivery), Toast.LENGTH_LONG, Gravity.TOP);
         } else {
             float remainingQuantity = mAdapterRVDeliveryItem.listDelivery.get(selectedIndex).getMiktar() - mAdapterRVDeliveryItem.listDelivery.get(selectedIndex).getMiktar2();
@@ -533,16 +523,14 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         }
     }
     private void openPopUpWindowPallet2(View v) {
-        if (response != null && mPallets != null){
-            mPallets = GetAllPallets();
-            MyPopUpPalet2 popUpClassPallet2 = new MyPopUpPalet2(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this, mPallets);
-            popUpClassPallet2.showPopupWindow();
-        }
+        mReadedPallets = GetAllPallets();
+        MyPopUpPalet2 popUpClassPallet2 = new MyPopUpPalet2(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this, mReadedPallets);
+        popUpClassPallet2.showPopupWindow();
     }
 
     private List<Palet> GetAllPallets() {
         List<Palet> palets = new ArrayList<>();
-        for (DeliveryGroupItem item: response.get_deliveryItem()) {
+        for (DeliveryGroupItem item: mAdapterRVDeliveryItem.listDelivery) {
             if (item.getPalets() != null) {
                 for (Palet itemPalet: item.getPalets()) {
                     palets.add(itemPalet);
@@ -564,12 +552,18 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         toast.show();
     }
 
-    private void setDeliveryListView() {
-        mAdapterRVDeliveryItem = new AdapterRVDeliveryItem(response.get_deliveryItem(), DeliveryActivity.this);
+    private void setDeliveryListView(List<DeliveryGroupItem> items) {
+        mAdapterRVDeliveryItem = new AdapterRVDeliveryItem(items, DeliveryActivity.this);
         recViewDeliveryList.setAdapter(mAdapterRVDeliveryItem);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recViewDeliveryList.setLayoutManager(linearLayoutManager);
+    }
+
+    @Override
+    protected void onDestroy() {
+        saveDeliveryList();
+        super.onDestroy();
     }
 
     private void fillList(DeliveryGroup res) {
@@ -579,7 +573,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                 mPalletsInfoList = response.get_palletsInfoList();
                 selectedItemList = new ArrayList<>();
                 selectedIndex = -1;
-                setDeliveryListView();
+                setDeliveryListView(response.get_deliveryItem());
 
                 if (!requestHandler.checkService()) {
                     hideProgressDialog();
@@ -595,7 +589,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             String htmlContent = setWebViewVehicleInfo();
             webViewVehicle.loadData(htmlContent, "text/html", "UTF-8");
 
-            ClearPalletRow();
+            clearPalletRow();
             hideProgressDialog();
             if (response.get_status() == 0) {
                 btnStart.setBackgroundColor(Color.GREEN);
@@ -643,7 +637,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     private void clearPage() {
-        ClearPalletRow();
+        clearPalletRow();
         editBarcode.setText("");
         btnDeliveryNo.setText(getString(R.string.delivery));
 //        txtVehicle.setText("");
@@ -668,20 +662,6 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         txtBarcodeValue.setText("");
     }
 
-//    private String controlConditions() {
-//        String errMessage = "";
-//        double toplamSayimMiktar = 0;
-//        for (int i = 0; i <= response.get_deliveryItem().size() - 1; i++) {
-//            toplamSayimMiktar += response.get_deliveryItem().get(i).getMiktar2();
-//        }
-////        if (selectedItemList.size() != response.get_deliveryItem().size()){
-////            errMessage = "Tüm satırlar okutulmalıdır.";
-////        }
-//        if (toplamSayimMiktar <= 0) {
-//            errMessage = "En az bir satır okutulmalıdır.";
-//        }
-//        return errMessage;
-//    }
     private String controlConditions() {
         String errMessage = "";
         boolean isValid = true;
@@ -746,7 +726,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     protected void onSaveInstanceState(Bundle outState) {
         // Verileri kaydet
 //        saveState(outState);
-        SaveDeliveryList();
+        saveDeliveryList();
         super.onSaveInstanceState(outState);
     }
 
@@ -857,6 +837,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                         try {
                             finishDelivery(strCountDeliveryNo, mAdapterRVDeliveryItem.listDelivery, mPalletsInfoList);
                             response.set_status(2);
+                            saveDeliveryList();
                             selectedIndex = -1;
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -915,7 +896,6 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     public void DeleteUser() {
-        mEditor = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE).edit();
         mEditor.remove(KEY_USERNAME);
         mEditor.remove(KEY_PASSWORD);
         mEditor.apply();
@@ -949,7 +929,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         }
     }
 
-    private void ClearPalletRow(){
+    private void clearPalletRow(){
         txtMalAdi.setText("");
         txtPaletMiktar.setText("");
         editNumber.setText("0");
@@ -985,19 +965,22 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
     //endregion
     public void ResetPalet(){
-        for (DeliveryGroupItem item: response.get_deliveryItem()) {
+        for (DeliveryGroupItem item: mAdapterRVDeliveryItem.listDelivery) {
             item.setMiktar2(0);
             if(item.getPalets() != null){
                 item.getPalets().clear();
             }
-            for (Palet itemPalet: mPallets) {
+            for (Palet itemPalet: mReadedPallets) {
                 if (item.getMateryalKodu().equals(itemPalet.getMateryalKodu())){
                     item.setMiktar2(item.getMiktar2() + itemPalet.getMiktar());
                     item.addPalet(itemPalet);
                 }
             }
         }
-        setDeliveryListView();
+        mAdapterRVDeliveryItem.notifyDataSetChanged();
+        savePrefResponse();
+        savePrefPallet();
+        setDeliveryListView(mAdapterRVDeliveryItem.listDelivery);
     }
 
     private void addRow(){
@@ -1044,19 +1027,30 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                                 if (index == -1){
                                     pal.setMiktar(dNumber);
                                     item.addPalet(pal);
+                                    mAdapterRVDeliveryItem.notifyDataSetChanged();
+                                    savePrefResponse();
+                                    savePrefPallet();
                                     SoundManager.playSound(this, R.raw.beep);
                                 } else {
                                     fixedQuantity = - item.getPalets().get(index).getMiktar();
                                     item.getPalets().get(index).setMiktar(dNumber);
+                                    mAdapterRVDeliveryItem.notifyDataSetChanged();
+                                    savePrefResponse();
+                                    savePrefPallet();
+                                    SoundManager.playSound(this, R.raw.beep);
                                 }
                             } else {
                                 pal.setMiktar(dNumber);
                                 item.addPalet(pal);
+                                mAdapterRVDeliveryItem.notifyDataSetChanged();
+                                savePrefResponse();
+                                savePrefPallet();
                                 SoundManager.playSound(this, R.raw.beep);
                             }
                             quantity = mAdapterRVDeliveryItem.listDelivery.get(selectedIndex).getMiktar2();
                             mAdapterRVDeliveryItem.setSayimMiktar(selectedIndex, quantity + dNumber + fixedQuantity, "");
-                            ClearPalletRow();
+                            mAdapterRVDeliveryItem.notifyDataSetChanged();
+                            clearPalletRow();
                         }
                     }
                 }
@@ -1129,7 +1123,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             response = requestHandler.getDelivery(strCountDeliveryNo);
             if (response != null && (response.get_status() != 2)){
                 mPalletsInfoList = response.get_palletsInfoList();
-                setDeliveryListView();
+                setDeliveryListView(response.get_deliveryItem());
                 mAdapterRVDeliveryItem.listDelivery = response.get_deliveryItem();
                 selectedItemList = new ArrayList<>();
                 mAdapterRVDeliveryItem.listReadedBarcodeList = selectedItemList;
@@ -1162,25 +1156,18 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         }
     }
 
-    public void SaveDeliveryList(){
+    public void saveDeliveryList(){
         if(response == null) return;
         Gson gson = new Gson();
         String json = "";
 
-        mEditor = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE).edit();
         mEditor.putString(KEY_SAVE_DELIVERYNO, strCountDeliveryNo);
-        json = gson.toJson(response);
-        mEditor.putString(KEY_SAVE_RESPONSE, json);
 
-        json = gson.toJson(mPallets);
-        mEditor.putString(KEY_SAVE_PALLETS, json);
+        savePrefResponse();
+        savePrefPallet();
 
         json = gson.toJson(mPalletsInfoList);
         mEditor.putString(KEY_SAVE_PALLETS_INFO, json);
-
-        mAdapterRVDeliveryItem.notifyDataSetChanged();
-        json = gson.toJson(mAdapterRVDeliveryItem.listDelivery);
-        mEditor.putString(KEY_SAVE_ADAPTER_LIST, json);
 
         json = gson.toJson(selectedItemList);
         mEditor.putString(KEY_SAVE_SELECTEDITEMLIST, json);
@@ -1188,23 +1175,31 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         mEditor.apply();
     }
 
-    public void LoadDeliveryList(){
+    public void loadDeliveryList(){
         Gson gson = new Gson();
         String json = "";
+        List<DeliveryGroupItem> tempList = new ArrayList<>();
 
-        mPreferences = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE);
         strCountDeliveryNo = mPreferences.getString(KEY_SAVE_DELIVERYNO,"");
 
         if (strCountDeliveryNo.equals("")) return;
 
+        Type listType = new TypeToken<List<DeliveryGroupItem>>(){}.getType();
+        json = mPreferences.getString(KEY_SAVE_ADAPTER_LIST,"");
+        tempList =  gson.fromJson(json, listType);
+
         json = mPreferences.getString(KEY_SAVE_RESPONSE,"");
         response = new DeliveryGroup();
         response = gson.fromJson(json, DeliveryGroup.class);
-        setDeliveryListView();
+        response.set_deliveryItem(tempList);
+        setDeliveryListView(tempList);
 
-        json = mPreferences.getString(KEY_SAVE_ADAPTER_LIST,"");
-        Type listType = new TypeToken<List<DeliveryGroupItem>>(){}.getType();
-        mAdapterRVDeliveryItem.listDelivery = gson.fromJson(json, listType);
+        if (response.get_status() == 2){
+            clearPage();
+            return;
+        }
+
+        mAdapterRVDeliveryItem.listDelivery = tempList;
         mAdapterRVDeliveryItem.notifyDataSetChanged();
 
         json = mPreferences.getString(KEY_SAVE_SELECTEDITEMLIST,"");
@@ -1212,13 +1207,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         selectedItemList = gson.fromJson(json, listType);
         mAdapterRVDeliveryItem.listReadedBarcodeList = selectedItemList;
 
-        json = mPreferences.getString(KEY_SAVE_PALLETS,"");
-        listType = new TypeToken<ArrayList<Palet>>(){}.getType();
-        mPallets = gson.fromJson(json, listType);
-        if (mPallets == null || mPallets.size() == 0){
-            mPallets = GetAllPallets();
-        }
-        ResetPalet();
+        mReadedPallets = GetAllPallets();
+
         json = mPreferences.getString(KEY_SAVE_PALLETS_INFO,"");
         listType = new TypeToken<ArrayList<PalletsInfo>>(){}.getType();
         mPalletsInfoList = gson.fromJson(json, listType);
@@ -1226,5 +1216,19 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             mPalletsInfoList = new ArrayList<>();
         }
         fillList(response);
+    }
+    public void savePrefResponse() {
+        Gson gson = new Gson();
+        String json = "";
+        json = gson.toJson(response);
+        mEditor.putString(KEY_SAVE_RESPONSE, json);
+    }
+    public void savePrefPallet() {
+        Gson gson = new Gson();
+        String json = "";
+        mAdapterRVDeliveryItem.notifyDataSetChanged();
+        json = gson.toJson(mAdapterRVDeliveryItem.listDelivery);
+        mEditor.putString(KEY_SAVE_ADAPTER_LIST, json);
+
     }
 }
