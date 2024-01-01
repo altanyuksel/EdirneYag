@@ -88,13 +88,9 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     AlertDialog.Builder errDialog;
     private CookieManager cookieManage; //Yeni nesil servisi cookie kullandığından cookie set ediyoruz. Bunu yapmazsak çalışmıyor.
     private MyPopUpWindow popUpClass;
-    private MyPopUpPalet popUpClassPallet;
-    private MyPopUpPalet2 popUpClassPallet2;
     public RequestHandler requestHandler;
-
-    private SurfaceView surfaceViewDelivery;
     private SurfaceHolder mSurfaceHolder;
-    private TextView txtBarcodeValue, txtUsername, txtMenuUsername, txtMalAdi, txtPaletMiktar;
+    private TextView txtBarcodeValue, txtMalAdi, txtPaletMiktar;
     private WebView webViewVehicle;
     public static String strCountDeliveryNo, barcodeString;
     public static Palet readedPalet;
@@ -117,7 +113,6 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private static final String KEY_SAVE_DELIVERYNO = "KEY_SAVE_DELIVERYNO";
     private static final String KEY_SAVE_RESPONSE = "KEY_SAVE_RESPONSE";
     private static final String KEY_SAVE_ADAPTER_LIST = "KEY_SAVE_ADAPTER_LIST";
-    private static final String KEY_SAVE_ADAPTER_READED_LIST = "KEY_SAVE_ADAPTER_READED_LIST";
     private static final String KEY_SAVE_SELECTEDITEMLIST = "KEY_SAVE_SELECTEDITEMLIST";
     private static final String KEY_SAVE_PALLETS = "KEY_SAVE_PALLETS";
     private static final String KEY_SAVE_PALLETS_INFO = "KEY_SAVE_PALLETS_INFO";
@@ -142,12 +137,12 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initViews();
-        initDefinitions(savedInstanceState);
+        initDefinitions();
         checkService();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
@@ -216,12 +211,12 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         btnStart = findViewById(R.id.btnStart);
         btnUndo = findViewById(R.id.btnUndo);
         btnFinish = findViewById(R.id.btnFinish);
-        surfaceViewDelivery = findViewById(R.id.surfaceViewDelivery);
+        SurfaceView surfaceViewDelivery = findViewById(R.id.surfaceViewDelivery);
         txtBarcodeValue = findViewById(R.id.txtBarcodeValue);
         btnUpdate = findViewById(R.id.btnUpdate);
 //        txtVehicle = findViewById(R.id.txtVehicle);
         webViewVehicle = findViewById(R.id.webViewVehicle);
-        txtUsername = findViewById(R.id.txtUsername);
+        TextView txtUsername = findViewById(R.id.txtUsername);
         recViewDeliveryList = findViewById(R.id.recViewDeliveryItemList);
         btnChangeUser = findViewById(R.id.btnChangeUser);
         cameraSwitch = findViewById(R.id.swCamera);
@@ -236,15 +231,13 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
         mSurfaceHolder = surfaceViewDelivery.getHolder();
 
-        cameraSwitch.setChecked(false);
-
         drawerLayout = findViewById(R.id.drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.common_open_on_phone, R.string.barcode_read);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         navigationView = findViewById(R.id.nav_view);
-        txtMenuUsername = navigationView.getHeaderView(0).findViewById(R.id.txtMenuUsername);
+        TextView txtMenuUsername = navigationView.getHeaderView(0).findViewById(R.id.txtMenuUsername);
         setupDrawerContent(navigationView);
 
 
@@ -357,17 +350,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         mEditor.putBoolean(KEY_CAMERA_STATUS, open);
     }
 
-    private void setCameraStatus(){
-        mPreferences = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE);
-        boolean isOpen = mPreferences.getBoolean(KEY_CAMERA_STATUS,false);
-        if (isOpen && isCameraRunning == false){
-            startCamera();
-        }else if(!isOpen && isCameraRunning == true){
-            stopCamera();
-        }
-    }
-
-    private void initDefinitions(Bundle savedInstanceState) {
+    private void initDefinitions() {
         mEditor = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE).edit();
         mPreferences = getSharedPreferences(PREF_CREDENTIAL, MODE_PRIVATE);
         mContext = getApplicationContext();
@@ -377,22 +360,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         requestHandler = new RequestHandler();
         selectedItemList = new ArrayList<>();
         selectedIndex = -1;
-        mPalletsInfoList = new ArrayList<PalletsInfo>();
-        if (savedInstanceState != null) {
-//            // Eğer önceki bir durum kaydedilmişse, verileri geri yükle
-//            strCountDeliveryNo = savedInstanceState.getString(KEY_DELIVERYNO);
-//            response = savedInstanceState.getParcelable(KEY_DELIVERY);
-//            mPalletsInfoList = response.get_palletsInfoList();
-//            setDeliveryListView();
-//            mAdapterRVDeliveryItem.listDelivery = savedInstanceState.getParcelableArrayList(KEY_DELIVERYITEMS_ADAPTER);
-//            selectedItemList = savedInstanceState.getIntegerArrayList(KEY_DELIVERYITEMS_SELECTED);
-//            mAdapterRVDeliveryItem.listReadedBarcodeList = selectedItemList;
-////            mAdapterRVDeliveryItem.notifyDataSetChanged();
-//            fillList(response);
-            LoadDeliveryList();
-        } else {
-            LoadDeliveryList();
-        }
+        mPalletsInfoList = new ArrayList<>();
+        LoadDeliveryList();
     }
 
     private void checkService() {
@@ -412,7 +381,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     private void startDelivery(String deliveryNo) throws Exception {
-        if (deliveryNo != null && deliveryNo != "") {
+        if (deliveryNo != null && !deliveryNo.equals("")) {
             requestHandler.setDeliveryStatus(deliveryNo, 1, this, response.get_deliveryItem(), null);
             response.set_status(1);
             selectedItemList = new ArrayList<>();
@@ -429,7 +398,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     private void undoDelivery(String deliveryNo) throws Exception {
-        if (deliveryNo != null && deliveryNo != "") {
+        if (deliveryNo != null && !deliveryNo.equals("")) {
             requestHandler.setDeliveryStatus(deliveryNo, 0, this, response.get_deliveryItem(), null);
             response.set_status(1);
             selectedItemList = new ArrayList<>();
@@ -460,7 +429,6 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             @Override
             public void release() {
                 if (!barcodeString.equals("")) {
-//                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.barcode_read), Toast.LENGTH_SHORT).show();
 //                    showToastMessage(getString(R.string.barcode_read), Toast.LENGTH_LONG, Gravity.TOP);
                 }
             }
@@ -481,6 +449,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                 }
             }
         });
+        cameraSwitch.setChecked(false);
     }
 
     private void initProgressDialog() {
@@ -559,14 +528,14 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private void openPopUpWindowPallet(View v) {
         if (response != null && mPalletsInfoList != null){
             mPalletsInfoList = response.get_palletsInfoList();
-            popUpClassPallet = new MyPopUpPalet(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this, mPalletsInfoList);
+            MyPopUpPalet popUpClassPallet = new MyPopUpPalet(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this, mPalletsInfoList);
             popUpClassPallet.showPopupWindow();
         }
     }
     private void openPopUpWindowPallet2(View v) {
         if (response != null && mPallets != null){
             mPallets = GetAllPallets();
-            popUpClassPallet2 = new MyPopUpPalet2(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this, mPallets);
+            MyPopUpPalet2 popUpClassPallet2 = new MyPopUpPalet2(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this, mPallets);
             popUpClassPallet2.showPopupWindow();
         }
     }
@@ -623,12 +592,6 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                 }
             }
             btnDeliveryNo.setText(response.get_deliveryNo());
-            String info = "Plaka: " + response.get_plate();
-            info += ", Soför Ad - Soyad: " + response.get_driverName() + " " + response.get_driverSurname();
-            info += ", Soför TCKN: " + response.get_driverTCKN();
-            info += ", Soför Tel: " + response.get_driverPhone();
-//            txtVehicle.setText(info);
-//            String htmlContent = "<html><body><h1>Hello, World!</h1></body></html>";
             String htmlContent = setWebViewVehicleInfo();
             webViewVehicle.loadData(htmlContent, "text/html", "UTF-8");
 
@@ -740,7 +703,9 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     public void surfaceCreated(SurfaceHolder holder) {
         try {
             if (ActivityCompat.checkSelfPermission(DeliveryActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                cameraSource.start(mSurfaceHolder);
+                if (cameraSwitch.isChecked()){
+                    cameraSource.start(mSurfaceHolder);
+                }
             } else {
                 ActivityCompat.requestPermissions(DeliveryActivity.this, new
                         String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
@@ -754,7 +719,9 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         try {
             if (ActivityCompat.checkSelfPermission(DeliveryActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                cameraSource.start(mSurfaceHolder);
+                if (cameraSwitch.isChecked()){
+                    cameraSource.start(mSurfaceHolder);
+                }
             } else {
                 ActivityCompat.requestPermissions(DeliveryActivity.this, new
                         String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
@@ -973,8 +940,12 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private void stopCamera() {
         // Kamera durdurma kodları buraya eklenecek
         if (isCameraRunning) {
-            cameraSource.stop();
-            isCameraRunning = false;
+            try {
+                cameraSource.stop();
+                isCameraRunning = false;
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -1042,12 +1013,10 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                     }
                     for (DeliveryGroupItem item: mAdapterRVDeliveryItem.listDelivery) {
                         if (item.getMateryalKodu().equals(readedPalet.getMateryalKodu())){
-                            boolean isExist = false;
                             float prevQuantity = 0;
                             if(item.getPalets() != null){
                                 for (Palet itemPalet : item.getPalets()) {
                                     if (itemPalet != null && itemPalet.getSeriNo().equals(readedPalet.getSeriNo())){
-                                        isExist = true;
                                         prevQuantity = itemPalet.getMiktar();
                                     }
                                 }
@@ -1077,7 +1046,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                                     item.addPalet(pal);
                                     SoundManager.playSound(this, R.raw.beep);
                                 } else {
-                                    fixedQuantity = - item.getPalets().get(index).getMiktar();;
+                                    fixedQuantity = - item.getPalets().get(index).getMiktar();
                                     item.getPalets().get(index).setMiktar(dNumber);
                                 }
                             } else {
