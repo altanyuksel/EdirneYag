@@ -64,6 +64,9 @@ public class DeliveryGroup implements Parcelable {
 	public List<DeliveryGroupItem> get_deliveryItem(){
 		return _deliveryItem;
 	}
+	public void set_deliveryItem(List<DeliveryGroupItem> deliveryItem){
+		_deliveryItem = deliveryItem;
+	}
 
 	public String get_plate(){
 		return _plate;
