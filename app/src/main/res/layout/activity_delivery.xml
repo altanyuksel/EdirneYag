@@ -285,7 +285,7 @@
                     android:orientation="vertical">
                     <Button
                         android:id="@+id/btnChangeUser"
-                        android:layout_width="24dp"
+                        android:layout_width="30dp"
                         android:layout_height="0dp"
                         android:layout_weight="20"
                         android:layout_gravity="center"
