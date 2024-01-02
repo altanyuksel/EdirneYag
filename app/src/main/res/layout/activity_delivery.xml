@@ -91,6 +91,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:background="@color/Red"
+                        android:textColor="@color/white"
                         android:padding="5dp"
                         android:hint="@string/barcode"
                         android:textAlignment="center"
