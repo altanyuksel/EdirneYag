@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 
@@ -640,6 +641,9 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         clearPalletRow();
         editBarcode.setText("");
         btnDeliveryNo.setText(getString(R.string.delivery));
+        btnStart.setBackgroundColor(Color.LTGRAY);
+        btnUndo.setBackgroundColor(Color.LTGRAY);
+        btnFinish.setBackgroundColor(Color.LTGRAY);
 //        txtVehicle.setText("");
         String htmlContent = "<html><body><h1></h1></body></html>";
         webViewVehicle.loadData(htmlContent, "text/html", "UTF-8");

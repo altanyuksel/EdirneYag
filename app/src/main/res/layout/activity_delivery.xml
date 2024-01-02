@@ -38,27 +38,36 @@
                     <Button
                         android:id="@+id/txtDeliveryNo"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/LightGray"
+                        android:layout_marginRight="5dp"
                         android:layout_weight="40"
                         android:padding="4dp"
                         android:text="@string/delivery"></Button>
                     <Button
                         android:id="@+id/btnStart"
+                        android:background="@color/LightGray"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="30"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="5dp"                       android:layout_weight="30"
                         android:text="@string/start"></Button>
                     <Button
                         android:id="@+id/btnUndo"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:background="@color/LightGray"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="5dp"
                         android:layout_weight="30"
                         android:text="@string/undo"></Button>
 
                     <Button
                         android:id="@+id/btnFinish"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="35dp"
+                        android:background="@color/LightGray"
+                        android:layout_gravity="center"
                         android:layout_weight="30"
                         android:text="@string/finish"></Button>
                 </LinearLayout>
