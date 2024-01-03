@@ -524,9 +524,13 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         }
     }
     private void openPopUpWindowPallet2(View v) {
-        mReadedPallets = GetAllPallets();
-        MyPopUpPalet2 popUpClassPallet2 = new MyPopUpPalet2(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this, mReadedPallets);
-        popUpClassPallet2.showPopupWindow();
+        if (response != null) {
+            mReadedPallets = GetAllPallets();
+            if( mReadedPallets != null){
+                MyPopUpPalet2 popUpClassPallet2 = new MyPopUpPalet2(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this, mReadedPallets);
+                popUpClassPallet2.showPopupWindow();
+            }
+        }
     }
 
     private List<Palet> GetAllPallets() {
