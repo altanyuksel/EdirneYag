@@ -1110,7 +1110,6 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                     }
                 });
     }
-
     private void selectDrawerItem(MenuItem menuItem) {
         Button btnTemp = new Button(this);
         switch (menuItem.getItemId()) {
