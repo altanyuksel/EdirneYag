@@ -25,6 +25,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -83,7 +84,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     private Context mContext;
     private ProgressDialog progressDialog;
     //    private Button btnAdd, btnRemove, btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser;
-    private Button btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser, btnPalet, btnClear, btnPalet2;
+//    private Button btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo, btnChangeUser, btnPalet, btnClear, btnPalet2;
+    private Button btnStart, btnUndo, btnFinish, btnUpdate, btnDeliveryNo;
     private EditText editNumber, editBarcode;
 
     AlertDialog.Builder errDialog;
@@ -214,18 +216,18 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         btnUpdate = findViewById(R.id.btnUpdate);
 //        txtVehicle = findViewById(R.id.txtVehicle);
         webViewVehicle = findViewById(R.id.webViewVehicle);
-        TextView txtUsername = findViewById(R.id.txtUsername);
+//        TextView txtUsername = findViewById(R.id.txtUsername);
         recViewDeliveryList = findViewById(R.id.recViewDeliveryItemList);
-        btnChangeUser = findViewById(R.id.btnChangeUser);
+//        btnChangeUser = findViewById(R.id.btnChangeUser);
         cameraSwitch = findViewById(R.id.swCamera);
 //        cameraSwitch.setVisibility(View.GONE);
         txtMalAdi = findViewById(R.id.txtMalAdi);
         txtPaletMiktar = findViewById(R.id.txtPaletMiktar);
         editNumber = findViewById(R.id.editSayim);
         editBarcode = findViewById(R.id.editBarcode);
-        btnPalet = findViewById(R.id.btnPallet);
-        btnClear = findViewById(R.id.btnClear);
-        btnPalet2 = findViewById(R.id.btnPallet2);
+//        btnPalet = findViewById(R.id.btnPallet);
+//        btnClear = findViewById(R.id.btnClear);
+//        btnPalet2 = findViewById(R.id.btnPallet2);
 
         mSurfaceHolder = surfaceViewDelivery.getHolder();
 
@@ -249,10 +251,10 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 //        btnRemove.setOnClickListener(this::onClickBtnRemove);
         btnDeliveryNo.setOnClickListener(this::onClickBtnDeliveryNo);
         btnUpdate.setOnClickListener(this::onClickBtnUpdate);
-        btnChangeUser.setOnClickListener(this::onClickBtnChangeUser);
-        btnPalet.setOnClickListener(this::onClickBtnPalet);
-        btnClear.setOnClickListener(this::onClickBtnClear);
-        btnPalet2.setOnClickListener(this::onClickBtnPalet2);
+//        btnChangeUser.setOnClickListener(this::onClickBtnChangeUser);
+//        btnPalet.setOnClickListener(this::onClickBtnPalet);
+//        btnClear.setOnClickListener(this::onClickBtnClear);
+//        btnPalet2.setOnClickListener(this::onClickBtnPalet2);
 //        btnStart.setBackgroundColor(Color.RED);
 //        btnUndo.setBackgroundColor(Color.RED);
 //        btnFinish.setBackgroundColor(Color.RED);
@@ -261,7 +263,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         btnUndo.setEnabled(false);
         btnFinish.setEnabled(false);
 
-        txtUsername.setText(ServiceDefinitions.loginUser.get_userName());
+//        txtUsername.setText(ServiceDefinitions.loginUser.get_userName());
         txtMenuUsername.setText(ServiceDefinitions.loginUser.get_userName());
 
         editNumber.setFilters(new InputFilter[]{new DecimalInputFilter(3)});
@@ -1110,20 +1112,22 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     private void selectDrawerItem(MenuItem menuItem) {
+        Button btnTemp = new Button(this);
         switch (menuItem.getItemId()) {
             case R.id.nav_pallet:
-                onClickBtnPalet(btnPalet);
+                onClickBtnPalet(btnTemp);
                 break;
             case R.id.nav_pallet_delete:
-                onClickBtnPalet2(btnPalet2);
+                onClickBtnPalet2(btnTemp);
                 break;
             case R.id.nav_clear:
-                onClickBtnClear(btnClear);
+                onClickBtnClear(btnTemp);
                 break;
             case R.id.nav_logout:
-                onClickBtnChangeUser(btnChangeUser);
+                onClickBtnChangeUser(btnTemp);
                 break;
         }
+        drawerLayout.closeDrawer(GravityCompat.START);
     }
 
     private void readPalet(String barcode){
