@@ -66,4 +66,5 @@
     <string name="delete_selected_pallet">numaralı palet silinecek. Onaylıyor musunuz?</string>
     <string name="logout">Çıkış</string>
     <string name="barcode">Barkod No</string>
+    <string name="clear_screen">Ekran temizlenecek. Onaylıyor musunuz?</string>
 </resources>

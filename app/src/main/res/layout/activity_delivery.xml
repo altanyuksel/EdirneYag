@@ -42,7 +42,7 @@
                         android:background="@color/LightGray"
                         android:layout_marginRight="5dp"
                         android:layout_weight="40"
-                        android:padding="4dp"
+                        android:padding="1dp"
                         android:text="@string/delivery"></Button>
                     <Button
                         android:id="@+id/btnStart"
@@ -267,20 +267,20 @@
                         android:orientation="horizontal"
                         android:layout_marginBottom="5dp">
                         <Button
+                            android:id="@+id/btnClear"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="50"
+                            android:layout_gravity="center"
+                            android:text="@string/clear">
+                        </Button>
+                        <Button
                             android:id="@+id/btnPallet"
                             android:layout_width="0dp"
                             android:layout_height="50dp"
                             android:layout_weight="50"
-                            android:text="@string/pallet"
-                            android:layout_gravity="center">
-                        </Button>
-                        <Button
-                            android:id="@+id/btnPallet2"
-                            android:layout_width="0dp"
-                            android:layout_height="50dp"
-                            android:layout_weight="50"
-                            android:text="@string/pallet_delete"
-                            android:layout_gravity="center">
+                            android:layout_gravity="center"
+                            android:text="@string/pallet">
                         </Button>
                     </LinearLayout>
                 </LinearLayout>
@@ -307,11 +307,11 @@
                         android:textColor="@android:color/black"
                         android:textSize="20sp" />
                     <Button
-                        android:id="@+id/btnClear"
+                        android:id="@+id/btnPallet2"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:text="@string/clear"
-                        android:layout_gravity="bottom">
+                        android:layout_gravity="bottom"
+                        android:text="@string/pallet_delete">
                     </Button>
                 </LinearLayout>
             </LinearLayout>
