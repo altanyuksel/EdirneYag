@@ -759,7 +759,23 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     }
 
     public void onClickBtnClear(View v) {
-        clearPage();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.clear_screen));
+        builder.setCancelable(false);
+        builder.setPositiveButton(getApplicationContext().getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                clearPage();
+            }
+        });
+        builder.setNegativeButton(getApplicationContext().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     public void onClickBtnStart(View v) {
