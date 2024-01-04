@@ -43,7 +43,7 @@
                         android:layout_marginRight="5dp"
                         android:layout_weight="40"
                         android:padding="1dp"
-                        android:text="@string/delivery"></Button>
+                        android:text="@string/select"></Button>
                     <Button
                         android:id="@+id/btnStart"
                         android:background="@color/LightGray"

@@ -67,4 +67,12 @@
     <string name="logout">Çıkış</string>
     <string name="barcode">Barkod No</string>
     <string name="clear_screen">Ekran temizlenecek. Onaylıyor musunuz?</string>
+    <string name="document_no">Evrak No</string>
+    <string name="select">Seç</string>
+    <string name="select_document">Evrak Türü Seçiniz</string>
+    <string-array name="dropdown_items_document_types">
+        <item>Yükleme Listesi</item>
+        <item>Hediye Fişi</item>
+        <item>İç Kullanım</item>
+    </string-array>
 </resources>

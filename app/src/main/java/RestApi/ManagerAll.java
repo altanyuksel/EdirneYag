@@ -56,6 +56,11 @@ public class ManagerAll extends BaseManager {
         basicAuth = "Basic " + basicAuth;
 
         Call<ResponseDelivery> call = getRestApiClient().getDelivery(basicAuth, type,deliveryNo,page,pageSize);
+        if (type == 500){
+            call = getRestApiClient().getDelivery(basicAuth, type,deliveryNo,page,pageSize);
+        } else if (type == 55) {
+//            call = getRestApiClient().getStockGift(basicAuth, deliveryNo,page,pageSize);
+        }
         return call;
     }
 

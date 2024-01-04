@@ -513,8 +513,8 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         }
     }
 
-    private void openPopUpWindow(View v) {
-        popUpClass = new MyPopUpWindow(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this);
+    private void openPopUpWindow(View v, int docType) {
+        popUpClass = new MyPopUpWindow(mRequestQueue, serviceDefinitions, cookieManage, v, DeliveryActivity.this, docType);
         popUpClass.showPopupWindow();
     }
 
@@ -749,9 +749,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
     //region $EVENTS
     public void onClickBtnDeliveryNo(View v) {
         if (btnDeliveryNo.getId() == v.getId()) {
-            showProgressDialog("", getApplicationContext().getString(R.string.read));
-            openPopUpWindow(v);
-            hideProgressDialog();
+            showOptionsDialog();
         }
     }
 
@@ -1256,6 +1254,41 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         mAdapterRVDeliveryItem.notifyDataSetChanged();
         json = gson.toJson(mAdapterRVDeliveryItem.listDelivery);
         mEditor.putString(KEY_SAVE_ADAPTER_LIST, json);
+    }
+    private void showOptionsDialog() {
+        // Seçenekleri içeren diziye resources üzerinden erişim
+        String[] options = getResources().getStringArray(R.array.dropdown_items_document_types);
+        final int[] docType = {-1};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getResources().getString(R.string.select_document));
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Her seçenek için ayrı bir işlem gerçekleştir
+                switch (which) {
+                    case 0:
+                        docType[0] = 500;
+                        break;
+                    case 1:
+                        docType[0] = 55;
+                        break;
+                    case 2:
+                        docType[0] = 52;
+                        break;
+                    default:
+                        break;
+                }
+                if(docType[0] != -1){
+                    showProgressDialog("", getApplicationContext().getString(R.string.read));
+                    openPopUpWindow(btnDeliveryNo, docType[0]);
+                    hideProgressDialog();
+                }
+                // Dialog'u kapat
+                dialog.dismiss();
+            }
+        });
 
+        // Dialog'u göster
+        builder.show();
     }
 }

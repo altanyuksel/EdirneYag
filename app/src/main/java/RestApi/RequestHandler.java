@@ -65,14 +65,13 @@ public class RequestHandler {
         return isServiceOK;
     }
 
-    public ResponseDelivery getAllDeliveryList() {
+    public ResponseDelivery getAllDeliveryList(int deliveryType) {
         ResponseDelivery responseDelivery = null;
         ResponseDelivery tempRes = null;
         int page = 0, pageSize = 100;
         boolean bExist = true;
         Call<ResponseDelivery> call;
         String res = "";
-        int deliveryType = -1;
         if (ServiceDefinitions.loginUser.get_userType().equals("Fabrika")){
             deliveryType = 500;
         } else if(ServiceDefinitions.loginUser.get_userType().equals("Şube")){

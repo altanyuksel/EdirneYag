@@ -43,13 +43,15 @@ class MyPopUpWindow {
     private TextView lblDelDate;
     private TextView lblWaybillNo;
     private AlertDialog.Builder errDialog;
+    private int docType;
     //endregion
 
     //region $METHODS
-    public MyPopUpWindow(RequestQueue mReqQueue, ServiceDefinitions serviceDefinitions, CookieManager cookieManage, final View mainView, DeliveryActivity mainAct) {
+    public MyPopUpWindow(RequestQueue mReqQueue, ServiceDefinitions serviceDefinitions, CookieManager cookieManage, final View mainView, DeliveryActivity mainAct, int docType) {
         this.serviceDefinitions = serviceDefinitions;
         this.mainView = mainView;
         this.mainAct = mainAct;
+        this.docType = docType;
     }
     private void initErrorDialog() {
         errDialog = new AlertDialog.Builder(mainAct);
@@ -118,7 +120,8 @@ class MyPopUpWindow {
                     showErrorDialog(mainAct.getString(R.string.error_credential));
                     return;
                 }
-                response = requestHandler.getAllDeliveryList();
+ //                response = requestHandler.getAllDeliveryList();
+                response = requestHandler.getAllDeliveryList(docType);
                 setDeliveryListView();
                 hideProgressDialog();
             } catch (Exception exception) {

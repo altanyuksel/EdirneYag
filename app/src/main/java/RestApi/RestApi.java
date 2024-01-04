@@ -40,4 +40,6 @@ public interface RestApi {
 
     @GET("api/deliverygroupproduct")
     Call<ResponseGroup> getDeliveryGroupProduct(@Header("Authorization") String basicAuth, @Query("type") int type, @Query("deliveryNo") String deliveryNo, @Query("page") int page, @Query("pageSize") int pageSize);
+//    @GET("api/stock/gift")
+//    Call<ResponseGroup> getStockGift(@Header("Authorization") String basicAuth, @Query("documentNo") String documentNo, @Query("page") int page, @Query("pageSize") int pageSize);
 }
