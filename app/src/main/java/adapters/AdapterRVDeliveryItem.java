@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import DeliveryGroup.DeliveryGroupItem;
-import Models.Delivery.DeliveryItem;
 
 public class AdapterRVDeliveryItem extends RecyclerView.Adapter<AdapterRVDeliveryItem.ViewHolder> {
     //region $MEMBERS

@@ -3,13 +3,11 @@ package RestApi;
 import android.os.StrictMode;
 import com.link.edirneyag.DeliveryActivity;
 import java.util.List;
-import Models.Delivery.Delivery;
+
 import DeliveryGroup.DeliveryGroup;
-import Models.Delivery.DeliveryItem;
 import Models.Delivery.Paging;
 import Models.Delivery.Palet;
 import Models.Delivery.PalletsInfo;
-import Models.Delivery.ResponseDelivery;
 import Models.Delivery.User;
 import ServiceSetting.ServiceDefinitions;
 import DeliveryGroup.ResponseGroup;
@@ -65,18 +63,18 @@ public class RequestHandler {
         return isServiceOK;
     }
 
-    public ResponseDelivery getAllDeliveryList(int deliveryType) {
-        ResponseDelivery responseDelivery = null;
-        ResponseDelivery tempRes = null;
+    public ResponseGroup getAllDeliveryList(int deliveryType) {
+        ResponseGroup responseDelivery = null;
+        ResponseGroup tempRes = null;
         int page = 0, pageSize = 100;
         boolean bExist = true;
-        Call<ResponseDelivery> call;
+        Call<ResponseGroup> call;
         String res = "";
-        if (ServiceDefinitions.loginUser.get_userType().equals("Fabrika")){
-            deliveryType = 500;
-        } else if(ServiceDefinitions.loginUser.get_userType().equals("Şube")){
-            deliveryType = 600;
-        }
+//        if (ServiceDefinitions.loginUser.get_userType().equals("Fabrika")){
+//            deliveryType = 500;
+//        } else if(ServiceDefinitions.loginUser.get_userType().equals("Şube")){
+//            deliveryType = 600;
+//        }
         try {
             while (bExist){
                 call = ManagerAll.getInstance().getDeliveryList(deliveryType,"",page,pageSize);
@@ -103,14 +101,13 @@ public class RequestHandler {
         return responseDelivery;
     }
 
-    public DeliveryGroup getDelivery(String deliveryNo) {
+    public DeliveryGroup getDelivery(String deliveryNo, int deliveryType) {
         ResponseGroup responseGroup = null;
-        int deliveryType = -1;
-        if (ServiceDefinitions.loginUser.get_userType().equals("Fabrika")){
-            deliveryType = 500;
-        } else if(ServiceDefinitions.loginUser.get_userType().equals("Şube")){
-            deliveryType = 600;
-        }
+//        if (ServiceDefinitions.loginUser.get_userType().equals("Fabrika")){
+//            deliveryType = 500;
+//        } else if(ServiceDefinitions.loginUser.get_userType().equals("Şube")){
+//            deliveryType = 600;
+//        }
         Call<ResponseGroup> call = ManagerAll.getInstance().getDeliveryListGroup(deliveryType,deliveryNo,0,10);
         String res = "";
         try {
@@ -123,14 +120,8 @@ public class RequestHandler {
         return responseGroup.getListItem().get(0);
     }
 
-    public void setDeliveryStatus(String orderNo, int status, DeliveryActivity activity, List<DeliveryGroupItem> items, List<PalletsInfo> itemsPallets) throws Exception {
+    public void setDeliveryStatus(String orderNo, int status, DeliveryActivity activity, List<DeliveryGroupItem> items, List<PalletsInfo> itemsPallets, int deliveryType) throws Exception {
         deliveryActivity = activity;
-        int deliveryType = -1;
-        if (ServiceDefinitions.loginUser.get_userType().equals("Fabrika")){
-            deliveryType = 500;
-        } else if(ServiceDefinitions.loginUser.get_userType().equals("Şube")){
-            deliveryType = 600;
-        }
         Call<String> call = ManagerAll.getInstance().setDeliveryStatus(deliveryType, orderNo, status, items);
         call.enqueue(new Callback<String>() {
             @Override

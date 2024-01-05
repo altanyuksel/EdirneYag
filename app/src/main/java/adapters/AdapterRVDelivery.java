@@ -12,19 +12,19 @@ import android.widget.TextView;
 import com.link.edirneyag.DeliveryActivity;
 import com.link.edirneyag.R;
 
-import Models.Delivery.Delivery;
-import Models.Delivery.ResponseDelivery;
+import DeliveryGroup.DeliveryGroup;
+import DeliveryGroup.ResponseGroup;
 
 public class AdapterRVDelivery extends RecyclerView.Adapter<AdapterRVDelivery.ViewHolder> {
     //region $MEMBERS
-    private ResponseDelivery listCountOrder;
+    private ResponseGroup listCountOrder;
     private LayoutInflater inflater;
     private Context mContext;
     private DeliveryActivity activity;
     //endregion
 
     //region $METHODS
-    public AdapterRVDelivery(Context context, ResponseDelivery listCountOrder, DeliveryActivity activity) {
+    public AdapterRVDelivery(Context context, ResponseGroup listCountOrder, DeliveryActivity activity) {
         inflater = LayoutInflater.from(context);
         this.listCountOrder = listCountOrder;
         this.mContext = context;
@@ -42,12 +42,12 @@ public class AdapterRVDelivery extends RecyclerView.Adapter<AdapterRVDelivery.Vi
     }
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
-        Delivery selectedModelExample = listCountOrder.getListItem().get(position);
+        DeliveryGroup selectedModelExample = listCountOrder.getListItem().get(position);
         holder.setData(selectedModelExample, position);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.closePopupWindow(listCountOrder.getListItem().get(position).get_deliveryNo());
+                activity.closePopupWindow(listCountOrder.getListItem().get(position).get_deliveryNo(), listCountOrder.getListItem().get(position).get_deliveryType());
             }
         });
     }
@@ -77,10 +77,13 @@ public class AdapterRVDelivery extends RecyclerView.Adapter<AdapterRVDelivery.Vi
             txtDeliveryDate = itemView.findViewById(R.id.txtDeliveryDate);
         }
 
-        public void setData(Delivery selectedModelExample, int position) {
+        public void setData(DeliveryGroup selectedModelExample, int position) {
             txtDeliveryNo.setText(selectedModelExample.get_deliveryNo());
             String iptalDurumuAck = "";
             switch (selectedModelExample.get_status()) {
+                case -1:
+                    iptalDurumuAck = mContext.getResources().getString(R.string.status_ready);
+                    break;
                 case 0:
                     iptalDurumuAck = mContext.getResources().getString(R.string.status_ready);
                     break;

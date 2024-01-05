@@ -8,7 +8,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-import Models.Delivery.DeliveryItem;
 import Models.Delivery.Palet;
 
 public class DeliveryGroupItem implements Parcelable {

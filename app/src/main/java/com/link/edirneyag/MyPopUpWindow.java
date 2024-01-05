@@ -19,8 +19,8 @@ import com.android.volley.RequestQueue;
 
 import java.net.CookieManager;
 
+import DeliveryGroup.ResponseGroup;
 import adapters.AdapterRVDelivery;
-import Models.Delivery.ResponseDelivery;
 import RestApi.RequestHandler;
 import ServiceSetting.ServiceDefinitions;
 
@@ -29,7 +29,7 @@ class MyPopUpWindow {
     private final String TAG = "DELIVERY_SELECT";
     private static ServiceDefinitions serviceDefinitions;
     private PopupWindow popupWindow;
-    private ResponseDelivery response;
+    private ResponseGroup response;
     private ProgressDialog progressDialog;
     private AdapterRVDelivery mAdapterRVDelivery;
     private RecyclerView recViewDeliveryList;
@@ -105,7 +105,7 @@ class MyPopUpWindow {
         });
     }
     private void initDefinations() {
-        response = new ResponseDelivery();
+        response = new ResponseGroup();
     }
     private void fillList() {
         if (!serviceDefinitions.equals(null)) {

@@ -7,10 +7,8 @@ import com.google.gson.Gson;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import Models.Delivery.DeliveryItem;
 import Models.Delivery.Palet;
 import Models.Delivery.PalletsInfo;
-import Models.Delivery.ResponseDelivery;
 import Models.Delivery.User;
 import ServiceSetting.ServiceDefinitions;
 import DeliveryGroup.ResponseGroup;
@@ -44,7 +42,7 @@ public class ManagerAll extends BaseManager {
         return call;
     }
 
-    public Call<ResponseDelivery> getDeliveryList(int type, String deliveryNo, int page, int pageSize) {
+    public Call<ResponseGroup> getDeliveryList(int type, String deliveryNo, int page, int pageSize) {
         String basicAuth = "";
         try {
             byte[] encrpt= (ServiceDefinitions.loginUser.get_userName() +":"+ ServiceDefinitions.loginUser.get_password()).getBytes("UTF-8");
@@ -55,11 +53,13 @@ public class ManagerAll extends BaseManager {
         }
         basicAuth = "Basic " + basicAuth;
 
-        Call<ResponseDelivery> call = getRestApiClient().getDelivery(basicAuth, type,deliveryNo,page,pageSize);
+        Call<ResponseGroup> call = getRestApiClient().getDeliveryGroupProduct(basicAuth, type,deliveryNo,page,pageSize);
         if (type == 500){
-            call = getRestApiClient().getDelivery(basicAuth, type,deliveryNo,page,pageSize);
+            call = getRestApiClient().getDeliveryGroupProduct(basicAuth, type,deliveryNo,page,pageSize);
         } else if (type == 55) {
-//            call = getRestApiClient().getStockGift(basicAuth, deliveryNo,page,pageSize);
+            call = getRestApiClient().getStockGift(basicAuth, deliveryNo,page,pageSize);
+        } else if (type == 52) {
+            call = getRestApiClient().getStockInternalUse(basicAuth, deliveryNo,page,pageSize);
         }
         return call;
     }
@@ -75,7 +75,14 @@ public class ManagerAll extends BaseManager {
         }
         basicAuth = "Basic " + basicAuth;
 
-        Call<ResponseGroup> call = getRestApiClient().getDeliveryGroupProduct(basicAuth, type,deliveryNo,page,pageSize);
+        Call<ResponseGroup> call = null;
+        if (type == 500){
+            call = getRestApiClient().getDeliveryGroupProduct(basicAuth, type,deliveryNo,page,pageSize);
+        } else if(type == 55){
+            call = getRestApiClient().getStockGift(basicAuth, deliveryNo,page,pageSize);
+        } else if(type == 52){
+            call = getRestApiClient().getStockInternalUse(basicAuth, deliveryNo,page,pageSize);
+        }
         return call;
     }
 
@@ -92,14 +99,33 @@ public class ManagerAll extends BaseManager {
 
         Call<String> call = null;
         if (status == 0){
-            call = getRestApiClient().setDeliveryUndo(basicAuth, type, deliveryNo);
+            if (type == 500){
+                call = getRestApiClient().setDeliveryUndo(basicAuth, type, deliveryNo);
+            } else if (type == 55) {
+                call = getRestApiClient().setGiftUndo(basicAuth, deliveryNo);
+            } else if (type == 52) {
+                call = getRestApiClient().setInernalUseUndo(basicAuth, deliveryNo);
+            }
         }else if(status == 1) {
-            call = getRestApiClient().setDeliveryStart(basicAuth, type, deliveryNo);
+            if (type == 500){
+                call = getRestApiClient().setDeliveryStart(basicAuth, type, deliveryNo);
+            } else if (type == 55) {
+                call = getRestApiClient().setGiftStart(basicAuth, deliveryNo);
+            } else if (type == 52) {
+                call = getRestApiClient().setInternalUseStart(basicAuth, deliveryNo);
+            }
         } else if(status == 2) {
             gson = new Gson();
             String json = gson.toJson(items);
             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
-            call = getRestApiClient().setDeliveryFinish(basicAuth, type, deliveryNo, requestBody);
+
+            if (type == 500){
+                call = getRestApiClient().setDeliveryFinish(basicAuth, type, deliveryNo, requestBody);
+            } else if (type == 55) {
+                call = getRestApiClient().setGiftFinish(basicAuth, deliveryNo, requestBody);
+            } else if (type == 52) {
+                call = getRestApiClient().setInternalUseFinish(basicAuth, deliveryNo, requestBody);
+            }
         }
         return call;
     }

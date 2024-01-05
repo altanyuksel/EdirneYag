@@ -73,6 +73,6 @@
     <string-array name="dropdown_items_document_types">
         <item>Yükleme Listesi</item>
         <item>Hediye Fişi</item>
-        <item>İç Kullanım</item>
+        <item>İç Kullanım Fişi</item>
     </string-array>
 </resources>

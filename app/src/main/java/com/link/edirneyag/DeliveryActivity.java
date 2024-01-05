@@ -373,9 +373,9 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         }
     }
 
-    private void startDelivery(String deliveryNo) throws Exception {
+    private void startDelivery(String deliveryNo, int type) throws Exception {
         if (deliveryNo != null && !deliveryNo.equals("")) {
-            requestHandler.setDeliveryStatus(deliveryNo, 1, this, response.get_deliveryItem(), null);
+            requestHandler.setDeliveryStatus(deliveryNo, 1, this, response.get_deliveryItem(), null, type);
             response.set_status(1);
             selectedItemList = new ArrayList<>();
             showToastMessage(getString(R.string.start_delivery), Toast.LENGTH_LONG, Gravity.TOP);
@@ -392,7 +392,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     private void undoDelivery(String deliveryNo) throws Exception {
         if (deliveryNo != null && !deliveryNo.equals("")) {
-            requestHandler.setDeliveryStatus(deliveryNo, 0, this, response.get_deliveryItem(), null);
+            requestHandler.setDeliveryStatus(deliveryNo, 0, this, response.get_deliveryItem(), null, response.get_deliveryType());
             response.set_status(1);
             selectedItemList = new ArrayList<>();
             showToastMessage(getString(R.string.undo_delivery), Toast.LENGTH_LONG, Gravity.TOP);
@@ -401,7 +401,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
 
     private void finishDelivery(String deliveryNo, List<DeliveryGroupItem> listItem, List<PalletsInfo> palletsInfoList) throws Exception {
         if (response.get_status() == 1) {
-            requestHandler.setDeliveryStatus(deliveryNo, 2, this, listItem, palletsInfoList);
+            requestHandler.setDeliveryStatus(deliveryNo, 2, this, listItem, palletsInfoList, response.get_deliveryType());
 //            requestHandler.setDeliveryPalletQuantity(deliveryNo, 2, this, palletsInfoList);
         } else {
             showErrorDialog(getString(R.string.error_finish));
@@ -547,10 +547,10 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         return palets;
     }
 
-    public void closePopupWindow(String emirNo) {
+    public void closePopupWindow(String emirNo, int docType) {
         popUpClass.dismissPopupWindow();
         strCountDeliveryNo = emirNo;
-        fillList(null);
+        fillList(null, docType);
     }
 
     private void showToastMessage(String message, int duration, int gravity) {
@@ -573,10 +573,10 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         super.onDestroy();
     }
 
-    private void fillList(DeliveryGroup res) {
+    private void fillList(DeliveryGroup res, int docType) {
         try {
             if (res == null) {
-                response = requestHandler.getDelivery(strCountDeliveryNo);
+                response = requestHandler.getDelivery(strCountDeliveryNo, docType);
                 mPalletsInfoList = response.get_palletsInfoList();
                 selectedItemList = new ArrayList<>();
                 selectedIndex = -1;
@@ -794,7 +794,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
                         try {
-                            startDelivery(strCountDeliveryNo);
+                            startDelivery(strCountDeliveryNo, response.get_deliveryType());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -1145,23 +1145,30 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             barcodeString = barcode;
             if(barcodeString.length() != 8) return;
             strCountDeliveryNo = barcodeString;
-            response = requestHandler.getDelivery(strCountDeliveryNo);
+            response = requestHandler.getDelivery(strCountDeliveryNo, 500);
+            if (response == null){
+                response = requestHandler.getDelivery(strCountDeliveryNo, 55);
+            }
+            if (response == null){
+                response = requestHandler.getDelivery(strCountDeliveryNo, 52);
+            }
             if (response != null && (response.get_status() != 2)){
                 mPalletsInfoList = response.get_palletsInfoList();
                 setDeliveryListView(response.get_deliveryItem());
                 mAdapterRVDeliveryItem.listDelivery = response.get_deliveryItem();
                 selectedItemList = new ArrayList<>();
                 mAdapterRVDeliveryItem.listReadedBarcodeList = selectedItemList;
-                fillList(response);
+                fillList(response, response.get_deliveryType());
                 try {
                     if (response.get_status() == 0){
-                        startDelivery(strCountDeliveryNo);
+                        startDelivery(strCountDeliveryNo, response.get_deliveryType());
                     }
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }else{
                 strCountDeliveryNo = "";
+                response = null;
             }
         }
     }
@@ -1240,7 +1247,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         if (mPalletsInfoList == null){
             mPalletsInfoList = new ArrayList<>();
         }
-        fillList(response);
+        fillList(response, response.get_deliveryType());
     }
     public void savePrefResponse() {
         Gson gson = new Gson();

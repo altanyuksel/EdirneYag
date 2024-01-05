@@ -14,6 +14,10 @@ public class ResponseGroup{
 	@SerializedName("ListItem")
 	private List<DeliveryGroup> listItem;
 
+	public void setPaging(Paging paging) {
+		this.paging = paging;
+	}
+
 	public boolean isErrStatus(){
 		return errStatus;
 	}
