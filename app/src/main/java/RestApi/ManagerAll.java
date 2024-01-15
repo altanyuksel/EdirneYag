@@ -60,6 +60,8 @@ public class ManagerAll extends BaseManager {
             call = getRestApiClient().getStockGift(basicAuth, deliveryNo,page,pageSize);
         } else if (type == 52) {
             call = getRestApiClient().getStockInternalUse(basicAuth, deliveryNo,page,pageSize);
+        } else if (type == 1) {
+            call = getRestApiClient().getStockRetailSale(basicAuth, deliveryNo,page,pageSize);
         }
         return call;
     }
@@ -82,6 +84,8 @@ public class ManagerAll extends BaseManager {
             call = getRestApiClient().getStockGift(basicAuth, deliveryNo,page,pageSize);
         } else if(type == 52){
             call = getRestApiClient().getStockInternalUse(basicAuth, deliveryNo,page,pageSize);
+        } else if(type == 1){
+            call = getRestApiClient().getStockRetailSale(basicAuth, deliveryNo,page,pageSize);
         }
         return call;
     }
@@ -105,6 +109,8 @@ public class ManagerAll extends BaseManager {
                 call = getRestApiClient().setGiftUndo(basicAuth, deliveryNo);
             } else if (type == 52) {
                 call = getRestApiClient().setInernalUseUndo(basicAuth, deliveryNo);
+            } else if (type == 1) {
+                call = getRestApiClient().setRetailSaleUndo(basicAuth, deliveryNo);
             }
         }else if(status == 1) {
             if (type == 500){
@@ -113,6 +119,8 @@ public class ManagerAll extends BaseManager {
                 call = getRestApiClient().setGiftStart(basicAuth, deliveryNo);
             } else if (type == 52) {
                 call = getRestApiClient().setInternalUseStart(basicAuth, deliveryNo);
+            } else if (type == 1) {
+                call = getRestApiClient().setRetailsaleStart(basicAuth, deliveryNo);
             }
         } else if(status == 2) {
             gson = new Gson();
@@ -125,6 +133,8 @@ public class ManagerAll extends BaseManager {
                 call = getRestApiClient().setGiftFinish(basicAuth, deliveryNo, requestBody);
             } else if (type == 52) {
                 call = getRestApiClient().setInternalUseFinish(basicAuth, deliveryNo, requestBody);
+            } else if (type == 1) {
+                call = getRestApiClient().setRetailSaleFinish(basicAuth, deliveryNo, requestBody);
             }
         }
         return call;

@@ -303,7 +303,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             public void afterTextChanged(Editable s) {
                 int textSize = s.length(); // Metnin uzunluğunu al
                 // Eğer metnin boyutu 13 ise Toast mesajını göster
-                if ((textSize == 8 && !TextUtils.isDigitsOnly(String.valueOf(s.charAt(0)))) || textSize == 13) {
+                if ((textSize == 8 && !TextUtils.isDigitsOnly(String.valueOf(s.charAt(0)))) || textSize == 13 || textSize == 16) {
                     if (canReadBarcode) {
                         canReadBarcode = false;
                         final String barcode = editBarcode.getText().toString();
@@ -1143,7 +1143,7 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
         } else if (response == null || response.get_deliveryNo() == null) {
 //            barcodeString = barcodes.valueAt(0).displayValue;
             barcodeString = barcode;
-            if(barcodeString.length() != 8) return;
+            if(!(barcodeString.length() == 8 || barcodeString.length() == 16)) return;
             strCountDeliveryNo = barcodeString;
             response = requestHandler.getDelivery(strCountDeliveryNo, 500);
             if (response == null){
@@ -1151,6 +1151,9 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
             }
             if (response == null){
                 response = requestHandler.getDelivery(strCountDeliveryNo, 52);
+            }
+            if (response == null){
+                response = requestHandler.getDelivery(strCountDeliveryNo, 1);
             }
             if (response != null && (response.get_status() != 2)){
                 mPalletsInfoList = response.get_palletsInfoList();
@@ -1281,6 +1284,9 @@ public class DeliveryActivity extends AppCompatActivity implements SurfaceHolder
                         break;
                     case 2:
                         docType[0] = 52;
+                        break;
+                    case 3:
+                        docType[0] = 1;
                         break;
                     default:
                         break;
